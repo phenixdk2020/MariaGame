@@ -79,3 +79,47 @@ Næste større blok er:
 - Material extraction fra foto
 - Wardrobe organization, favorites, sortering og filtre
 - Produktions-assets og animationer
+
+
+## Ekstra gennemført uden rigtige billeder
+
+- [x] Vend garderoben korrekt mod spilleren
+- [x] Flyt garderoben til bedre position i rummet
+- [x] Farve-/roughness-pass på rum, podium, spejl og bænk
+- [x] Mørkere spejl-surrogat med metallic/roughness
+- [x] Mere afdæmpet lysstyrke i dressing room
+- [x] Rundere mannequin-torso og pelvis
+- [x] Cylinderarme og cylinderben
+- [x] Primitive øjne og næse
+- [x] Hudfarve på mannequin
+- [x] Undertøjsfarve
+- [x] Farvede prototype-garments
+- [x] Tøjsilhuetter med sphere/cone/cylinder primitives
+- [x] Multi-piece overdel med ærmer
+- [x] Multi-piece bukser med to ben
+- [x] Jakke med separate ærmer
+- [x] Venstre/højre sko
+- [x] Item-specifik ærmelængde
+- [x] Adskil hanger preview-scale fra avatar fit-scale
+- [x] Fysisk garderobe-interiørlys
+- [x] Dørgreb på garderoben
+- [x] Center divider i garderoben
+- [x] Foldede tøjstakke på hylden
+- [x] Sko-props på skohylden
+- [x] Preview zoom med musehjul
+- [x] Front/bag/venstre/højre preview views
+- [x] Tre outfit save slots
+- [x] Import-panel i HUD
+- [x] Clothing import job/status data model
+- [x] Clothing source image roles: front/back/sider/detail
+- [x] Clothing source file validation
+- [x] Avatar reference photo data model
+- [x] Avatar face/body completeness model
+- [x] Clothing DataAsset type
+- [x] Hair style DataAsset type
+- [x] Private photo folders i .gitignore
+- [x] Git LFS-regler for Unreal/3D assets
+- [x] Update-MariaGame.ps1
+- [x] Build-MariaGame.ps1
+- [x] Sync-And-Build-MariaGame.ps1
+- [x] Fotoindtagsguide
