@@ -38,4 +38,10 @@ struct FMariaClothingItem
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TObjectPtr<UTexture2D> Thumbnail = nullptr;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Prototype")
+    FLinearColor PreviewColor = FLinearColor::White;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Prototype")
+    FVector PreviewScale = FVector(0.35f, 0.22f, 0.45f);
 };
