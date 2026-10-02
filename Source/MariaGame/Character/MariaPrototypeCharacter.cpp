@@ -103,10 +103,22 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     PrototypeHair->SetVisibility(true, true);
 
     PrototypeUpperBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeUpperBody"));
+    PrototypeUpperSleeveLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeUpperSleeveLeft"));
+    PrototypeUpperSleeveRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeUpperSleeveRight"));
+
     PrototypeLowerBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeLowerBody"));
+    PrototypeLowerLegLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeLowerLegLeft"));
+    PrototypeLowerLegRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeLowerLegRight"));
+
     PrototypeDress = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeDress"));
+
     PrototypeJacket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeJacket"));
+    PrototypeJacketSleeveLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeJacketSleeveLeft"));
+    PrototypeJacketSleeveRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeJacketSleeveRight"));
+
     PrototypeShoes = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeShoes"));
+    PrototypeShoeLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeShoeLeft"));
+    PrototypeShoeRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeShoeRight"));
 
     if (SphereMesh.Succeeded())
     {
@@ -114,10 +126,22 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
         PrototypeJacket->SetStaticMesh(SphereMesh.Object);
     }
 
+    if (CylinderMesh.Succeeded())
+    {
+        PrototypeUpperSleeveLeft->SetStaticMesh(CylinderMesh.Object);
+        PrototypeUpperSleeveRight->SetStaticMesh(CylinderMesh.Object);
+        PrototypeLowerLegLeft->SetStaticMesh(CylinderMesh.Object);
+        PrototypeLowerLegRight->SetStaticMesh(CylinderMesh.Object);
+        PrototypeJacketSleeveLeft->SetStaticMesh(CylinderMesh.Object);
+        PrototypeJacketSleeveRight->SetStaticMesh(CylinderMesh.Object);
+    }
+
     if (CubeMesh.Succeeded())
     {
         PrototypeLowerBody->SetStaticMesh(CubeMesh.Object);
         PrototypeShoes->SetStaticMesh(CubeMesh.Object);
+        PrototypeShoeLeft->SetStaticMesh(CubeMesh.Object);
+        PrototypeShoeRight->SetStaticMesh(CubeMesh.Object);
     }
 
     if (ConeMesh.Succeeded())
@@ -126,10 +150,22 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     }
 
     ConfigurePrototypeClothing(PrototypeUpperBody, FVector(-1.0f, 0.0f, 31.0f), FVector(0.29f, 0.20f, 0.29f));
-    ConfigurePrototypeClothing(PrototypeLowerBody, FVector(-1.0f, 0.0f, -38.0f), FVector(0.22f, 0.18f, 0.43f));
-    ConfigurePrototypeClothing(PrototypeDress, FVector(-2.0f, 0.0f, 2.0f), FVector(0.34f, 0.26f, 0.62f));
+    ConfigurePrototypeClothing(PrototypeUpperSleeveLeft, FVector(0.0f, -24.0f, 30.0f), FVector(0.085f, 0.085f, 0.22f));
+    ConfigurePrototypeClothing(PrototypeUpperSleeveRight, FVector(0.0f, 24.0f, 30.0f), FVector(0.085f, 0.085f, 0.22f));
+
+    ConfigurePrototypeClothing(PrototypeLowerBody, FVector(-1.0f, 0.0f, -10.0f), FVector(0.22f, 0.18f, 0.13f));
+    ConfigurePrototypeClothing(PrototypeLowerLegLeft, FVector(0.0f, -10.0f, -49.0f), FVector(0.10f, 0.10f, 0.42f));
+    ConfigurePrototypeClothing(PrototypeLowerLegRight, FVector(0.0f, 10.0f, -49.0f), FVector(0.10f, 0.10f, 0.42f));
+
+    ConfigurePrototypeClothing(PrototypeDress, FVector(-2.0f, 0.0f, 1.0f), FVector(0.33f, 0.26f, 0.60f));
+
     ConfigurePrototypeClothing(PrototypeJacket, FVector(-3.0f, 0.0f, 31.0f), FVector(0.33f, 0.23f, 0.33f));
-    ConfigurePrototypeClothing(PrototypeShoes, FVector(10.0f, 0.0f, -91.0f), FVector(0.22f, 0.22f, 0.075f));
+    ConfigurePrototypeClothing(PrototypeJacketSleeveLeft, FVector(-1.0f, -25.0f, 18.0f), FVector(0.095f, 0.095f, 0.34f));
+    ConfigurePrototypeClothing(PrototypeJacketSleeveRight, FVector(-1.0f, 25.0f, 18.0f), FVector(0.095f, 0.095f, 0.34f));
+
+    ConfigurePrototypeClothing(PrototypeShoes, FVector(10.0f, 0.0f, -91.0f), FVector(0.01f));
+    ConfigurePrototypeClothing(PrototypeShoeLeft, FVector(11.0f, -10.0f, -91.0f), FVector(0.21f, 0.11f, 0.075f));
+    ConfigurePrototypeClothing(PrototypeShoeRight, FVector(11.0f, 10.0f, -91.0f), FVector(0.21f, 0.11f, 0.075f));
 
     CameraBoom->bEnableCameraLag = true;
     CameraBoom->CameraLagSpeed = 9.0f;
@@ -196,6 +232,46 @@ void AMariaPrototypeCharacter::ApplyPrototypeColor(UStaticMeshComponent* Compone
     }
 }
 
+void AMariaPrototypeCharacter::SetPrototypeSlotExtrasVisible(EMariaClothingSlot Slot, bool bVisible, const FLinearColor& Color)
+{
+    auto SetPart = [&](UStaticMeshComponent* Component)
+    {
+        if (!Component)
+        {
+            return;
+        }
+
+        ApplyPrototypeColor(Component, Color, 0.62f, 0.0f);
+        Component->SetVisibility(bVisible, true);
+    };
+
+    switch (Slot)
+    {
+        case EMariaClothingSlot::UpperBody:
+            SetPart(PrototypeUpperSleeveLeft);
+            SetPart(PrototypeUpperSleeveRight);
+            break;
+
+        case EMariaClothingSlot::LowerBody:
+            SetPart(PrototypeLowerLegLeft);
+            SetPart(PrototypeLowerLegRight);
+            break;
+
+        case EMariaClothingSlot::Jacket:
+            SetPart(PrototypeJacketSleeveLeft);
+            SetPart(PrototypeJacketSleeveRight);
+            break;
+
+        case EMariaClothingSlot::Shoes:
+            SetPart(PrototypeShoeLeft);
+            SetPart(PrototypeShoeRight);
+            break;
+
+        default:
+            break;
+    }
+}
+
 void AMariaPrototypeCharacter::ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale)
 {
     Component->SetupAttachment(RootComponent);
@@ -231,6 +307,8 @@ bool AMariaPrototypeCharacter::WearItem(const FMariaClothingItem& Item)
     {
         PrototypeUpperBody->SetVisibility(false, true);
         PrototypeLowerBody->SetVisibility(false, true);
+        SetPrototypeSlotExtrasVisible(EMariaClothingSlot::UpperBody, false, Item.PreviewColor);
+        SetPrototypeSlotExtrasVisible(EMariaClothingSlot::LowerBody, false, Item.PreviewColor);
     }
     else if (Item.Slot == EMariaClothingSlot::UpperBody || Item.Slot == EMariaClothingSlot::LowerBody)
     {
@@ -242,6 +320,7 @@ bool AMariaPrototypeCharacter::WearItem(const FMariaClothingItem& Item)
         Component->SetRelativeScale3D(Item.PreviewScale);
         ApplyPrototypeColor(Component, Item.PreviewColor, 0.62f, 0.0f);
         Component->SetVisibility(true, true);
+        SetPrototypeSlotExtrasVisible(Item.Slot, true, Item.PreviewColor);
     }
 
     return true;
@@ -256,6 +335,8 @@ void AMariaPrototypeCharacter::RemoveItem(EMariaClothingSlot Slot)
         Component->SetVisibility(false, true);
     }
 
+    SetPrototypeSlotExtrasVisible(Slot, false, FLinearColor::White);
+
     if (Slot == EMariaClothingSlot::Hair)
     {
         PrototypeHair->SetVisibility(true, true);
@@ -266,11 +347,13 @@ void AMariaPrototypeCharacter::RemoveItem(EMariaClothingSlot Slot)
         if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::UpperBody))
         {
             PrototypeUpperBody->SetVisibility(true, true);
+            SetPrototypeSlotExtrasVisible(EMariaClothingSlot::UpperBody, true, FLinearColor(0.14f, 0.30f, 0.62f, 1.0f));
         }
 
         if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::LowerBody))
         {
             PrototypeLowerBody->SetVisibility(true, true);
+            SetPrototypeSlotExtrasVisible(EMariaClothingSlot::LowerBody, true, FLinearColor(0.05f, 0.08f, 0.14f, 1.0f));
         }
     }
 }
