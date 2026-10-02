@@ -95,8 +95,51 @@ void AMariaWardrobeActor::BuildHangers()
 
         if (Hanger)
         {
+            FMariaClothingItem DemoItem;
+
+            switch (Index % 5)
+            {
+                case 0:
+                    DemoItem.ItemId = TEXT("Prototype_TShirt");
+                    DemoItem.DisplayName = FText::FromString(TEXT("T-Shirt"));
+                    DemoItem.Slot = EMariaClothingSlot::UpperBody;
+                    DemoItem.PreviewScale = FVector(0.30f, 0.26f, 0.42f);
+                    break;
+
+                case 1:
+                    DemoItem.ItemId = TEXT("Prototype_Sweater");
+                    DemoItem.DisplayName = FText::FromString(TEXT("Sweater"));
+                    DemoItem.Slot = EMariaClothingSlot::UpperBody;
+                    DemoItem.PreviewScale = FVector(0.36f, 0.29f, 0.47f);
+                    break;
+
+                case 2:
+                    DemoItem.ItemId = TEXT("Prototype_Dress");
+                    DemoItem.DisplayName = FText::FromString(TEXT("Dress"));
+                    DemoItem.Slot = EMariaClothingSlot::Dress;
+                    DemoItem.PreviewScale = FVector(0.35f, 0.30f, 0.72f);
+                    break;
+
+                case 3:
+                    DemoItem.ItemId = TEXT("Prototype_Jacket");
+                    DemoItem.DisplayName = FText::FromString(TEXT("Jacket"));
+                    DemoItem.Slot = EMariaClothingSlot::Jacket;
+                    DemoItem.PreviewScale = FVector(0.40f, 0.31f, 0.50f);
+                    break;
+
+                default:
+                    DemoItem.ItemId = TEXT("Prototype_Blouse");
+                    DemoItem.DisplayName = FText::FromString(TEXT("Blouse"));
+                    DemoItem.Slot = EMariaClothingSlot::UpperBody;
+                    DemoItem.PreviewScale = FVector(0.32f, 0.27f, 0.44f);
+                    break;
+            }
+
+            Hanger->ClothingItem = DemoItem;
+            Hanger->bOccupied = true;
             Hanger->FinishSpawning(SpawnTransform);
             Hanger->AttachToComponent(HangerRail, FAttachmentTransformRules::KeepWorldTransform);
+            Hanger->ApplyClothingItem();
             SpawnedHangers.Add(Hanger);
         }
     }
