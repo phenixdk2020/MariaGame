@@ -2,6 +2,7 @@
 #include "MariaHangerActor.h"
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/PointLightComponent.h"
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -34,6 +35,13 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     BottomPanel = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BottomPanel"));
     UpperShelf = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("UpperShelf"));
     ShoeShelf = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShoeShelf"));
+    CenterDivider = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CenterDivider"));
+    LeftDoorHandle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("LeftDoorHandle"));
+    RightDoorHandle = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightDoorHandle"));
+    FoldedStackA = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FoldedStackA"));
+    FoldedStackB = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FoldedStackB"));
+    ShelfShoeLeft = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShelfShoeLeft"));
+    ShelfShoeRight = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShelfShoeRight"));
 
     SetupBox(CabinetBack, FVector(18.0f, 0.0f, 105.0f), FVector(0.06f, 1.45f, 2.10f));
     SetupBox(LeftSide, FVector(-5.0f, -145.0f, 105.0f), FVector(0.46f, 0.06f, 2.10f));
@@ -42,6 +50,11 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     SetupBox(BottomPanel, FVector(-5.0f, 0.0f, -100.0f), FVector(0.46f, 1.45f, 0.06f));
     SetupBox(UpperShelf, FVector(-5.0f, 0.0f, 240.0f), FVector(0.44f, 1.38f, 0.04f));
     SetupBox(ShoeShelf, FVector(-5.0f, 0.0f, -35.0f), FVector(0.44f, 1.38f, 0.04f));
+    SetupBox(CenterDivider, FVector(5.0f, 0.0f, 42.0f), FVector(0.40f, 0.035f, 0.72f));
+    SetupBox(FoldedStackA, FVector(-18.0f, -72.0f, 255.0f), FVector(0.28f, 0.42f, 0.075f));
+    SetupBox(FoldedStackB, FVector(-18.0f, 72.0f, 255.0f), FVector(0.28f, 0.42f, 0.075f));
+    SetupBox(ShelfShoeLeft, FVector(-26.0f, -48.0f, -18.0f), FVector(0.27f, 0.13f, 0.085f));
+    SetupBox(ShelfShoeRight, FVector(-26.0f, 48.0f, -18.0f), FVector(0.27f, 0.13f, 0.085f));
 
     LeftDoorHinge = CreateDefaultSubobject<USceneComponent>(TEXT("LeftDoorHinge"));
     LeftDoorHinge->SetupAttachment(Root);
@@ -57,11 +70,21 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     LeftDoor->SetRelativeScale3D(FVector(0.05f, 0.725f, 2.10f));
     if (CubeMesh.Succeeded()) LeftDoor->SetStaticMesh(CubeMesh.Object);
 
+    LeftDoorHandle->SetupAttachment(LeftDoorHinge);
+    LeftDoorHandle->SetRelativeLocation(FVector(-7.0f, 132.0f, 5.0f));
+    LeftDoorHandle->SetRelativeScale3D(FVector(0.025f, 0.025f, 0.28f));
+    if (CylinderMesh.Succeeded()) LeftDoorHandle->SetStaticMesh(CylinderMesh.Object);
+
     RightDoor = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RightDoor"));
     RightDoor->SetupAttachment(RightDoorHinge);
     RightDoor->SetRelativeLocation(FVector(0.0f, -72.5f, 0.0f));
     RightDoor->SetRelativeScale3D(FVector(0.05f, 0.725f, 2.10f));
     if (CubeMesh.Succeeded()) RightDoor->SetStaticMesh(CubeMesh.Object);
+
+    RightDoorHandle->SetupAttachment(RightDoorHinge);
+    RightDoorHandle->SetRelativeLocation(FVector(-7.0f, -132.0f, 5.0f));
+    RightDoorHandle->SetRelativeScale3D(FVector(0.025f, 0.025f, 0.28f));
+    if (CylinderMesh.Succeeded()) RightDoorHandle->SetStaticMesh(CylinderMesh.Object);
 
     HangerRail = CreateDefaultSubobject<USceneComponent>(TEXT("HangerRail"));
     HangerRail->SetupAttachment(Root);
@@ -77,6 +100,14 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     {
         HangerRailMesh->SetStaticMesh(CylinderMesh.Object);
     }
+
+    InteriorLight = CreateDefaultSubobject<UPointLightComponent>(TEXT("InteriorLight"));
+    InteriorLight->SetupAttachment(Root);
+    InteriorLight->SetRelativeLocation(FVector(-55.0f, 0.0f, 215.0f));
+    InteriorLight->SetIntensity(0.0f);
+    InteriorLight->SetAttenuationRadius(420.0f);
+    InteriorLight->SetLightColor(FLinearColor(1.0f, 0.72f, 0.48f, 1.0f));
+    InteriorLight->SetCastShadows(true);
 
     HangerClass = AMariaHangerActor::StaticClass();
 }
@@ -107,7 +138,7 @@ void AMariaWardrobeActor::BeginPlay()
 
     for (UStaticMeshComponent* Part : {
         CabinetBack.Get(), LeftSide.Get(), RightSide.Get(), TopPanel.Get(),
-        BottomPanel.Get(), UpperShelf.Get(), ShoeShelf.Get() })
+        BottomPanel.Get(), UpperShelf.Get(), ShoeShelf.Get(), CenterDivider.Get() })
     {
         Tint(Part, Wood, 0.42f, 0.0f);
     }
@@ -115,6 +146,13 @@ void AMariaWardrobeActor::BeginPlay()
     Tint(LeftDoor, WoodEdge, 0.38f, 0.0f);
     Tint(RightDoor, WoodEdge, 0.38f, 0.0f);
     Tint(HangerRailMesh, Metal, 0.23f, 0.72f);
+    Tint(LeftDoorHandle, Metal, 0.18f, 0.82f);
+    Tint(RightDoorHandle, Metal, 0.18f, 0.82f);
+
+    Tint(FoldedStackA, FLinearColor(0.12f, 0.28f, 0.52f, 1.0f), 0.82f, 0.0f);
+    Tint(FoldedStackB, FLinearColor(0.50f, 0.24f, 0.34f, 1.0f), 0.82f, 0.0f);
+    Tint(ShelfShoeLeft, FLinearColor(0.035f, 0.035f, 0.045f, 1.0f), 0.48f, 0.0f);
+    Tint(ShelfShoeRight, FLinearColor(0.18f, 0.06f, 0.035f, 1.0f), 0.48f, 0.0f);
 }
 
 void AMariaWardrobeActor::OnConstruction(const FTransform& Transform)
@@ -132,6 +170,11 @@ void AMariaWardrobeActor::Tick(float DeltaSeconds)
 
     DoorAlpha = FMath::FInterpTo(DoorAlpha, TargetDoorAlpha, DeltaSeconds, DoorAnimationSpeed);
     ApplyDoorPose();
+
+    if (InteriorLight)
+    {
+        InteriorLight->SetIntensity(FMath::Lerp(0.0f, 1350.0f, DoorAlpha));
+    }
 }
 
 void AMariaWardrobeActor::ApplyDoorPose()
