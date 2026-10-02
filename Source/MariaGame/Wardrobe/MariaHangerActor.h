@@ -21,6 +21,9 @@ public:
     TObjectPtr<UStaticMeshComponent> HangerMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> ClothingPreviewMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TObjectPtr<USkeletalMeshComponent> ClothingMesh;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wardrobe")
@@ -34,6 +37,9 @@ public:
 
     UFUNCTION(BlueprintCallable, Category="Wardrobe")
     void SetHighlighted(bool bHighlighted);
+
+    UFUNCTION(BlueprintCallable, Category="Wardrobe")
+    void SetOccupied(bool bNewOccupied);
 
     virtual void Interact_Implementation(AActor* Interactor) override;
     virtual void SetFocused_Implementation(bool bFocused) override;
