@@ -15,16 +15,21 @@
 - [x] Add placeholder body/character mesh
 - [x] Add placeholder wardrobe mesh
 - [x] Add placeholder hanger mesh
-- [ ] Add 3 placeholder clothing meshes
+- [x] Add 5 placeholder clothing items
 - [x] Player interaction trace
 - [x] Highlight selected hanger/clothing
 - [x] Pick clothing from hanger
 - [x] Equip selected clothing on Maria
-- [ ] Return clothing to hanger
+- [x] Return replaced clothing to hanger
 - [x] Open/close wardrobe doors
-- [ ] Dressing-room camera
-- [ ] Mirror/360-degree preview
-- [ ] Save/load outfit
+- [x] Dressing-room preview mode
+- [x] 360-degree character preview
+- [x] Save/load outfit
+- [ ] Interaction prompt UI
+- [ ] Clothing item name UI
+- [ ] Smooth wardrobe door animation
+- [ ] Replace primitive wardrobe with production asset
+- [ ] Replace primitive clothing with rigged test garments
 
 ## P1 – Avatar creator
 
