@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interaction/MariaInteractable.h"
 #include "MariaWardrobeActor.generated.h"
 
 class USceneComponent;
@@ -9,7 +10,7 @@ class UStaticMeshComponent;
 class AMariaHangerActor;
 
 UCLASS()
-class MARIAGAME_API AMariaWardrobeActor : public AActor
+class MARIAGAME_API AMariaWardrobeActor : public AActor, public IMariaInteractable
 {
     GENERATED_BODY()
 
@@ -23,6 +24,12 @@ public:
     TObjectPtr<UStaticMeshComponent> CabinetMesh;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> LeftDoor;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> RightDoor;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TObjectPtr<USceneComponent> HangerRail;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wardrobe")
@@ -34,8 +41,17 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wardrobe")
     float HangerSpacing = 18.0f;
 
+    UPROPERTY(BlueprintReadOnly, Category="Wardrobe")
+    bool bDoorsOpen = false;
+
     UFUNCTION(BlueprintCallable, Category="Wardrobe")
     void BuildHangers();
+
+    UFUNCTION(BlueprintCallable, Category="Wardrobe")
+    void SetDoorsOpen(bool bOpen);
+
+    virtual void Interact_Implementation(AActor* Interactor) override;
+    virtual void SetFocused_Implementation(bool bFocused) override;
 
 protected:
     virtual void OnConstruction(const FTransform& Transform) override;
