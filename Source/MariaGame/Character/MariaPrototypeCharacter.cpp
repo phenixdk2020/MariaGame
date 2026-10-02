@@ -384,6 +384,7 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("ViewBack"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewBack);
     PlayerInputComponent->BindAction(TEXT("ViewLeft"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewLeft);
     PlayerInputComponent->BindAction(TEXT("ViewRight"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewRight);
+    PlayerInputComponent->BindAction(TEXT("ToggleImport"), IE_Pressed, this, &AMariaPrototypeCharacter::ToggleImportPanel);
 }
 
 void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
@@ -592,6 +593,11 @@ void AMariaPrototypeCharacter::PreviewRight()
     {
         SetActorRotation(FRotator(0.0f, -90.0f, 0.0f));
     }
+}
+
+void AMariaPrototypeCharacter::ToggleImportPanel()
+{
+    bImportPanelVisible = !bImportPanelVisible;
 }
 
 void AMariaPrototypeCharacter::HairBlonde()
