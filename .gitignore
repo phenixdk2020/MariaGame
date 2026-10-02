@@ -15,3 +15,12 @@ Saved/
 .idea/
 .vscode/
 Build/Receipts/
+
+# Personal/private source material - never commit
+Private/
+Imports/SourcePhotos/
+Imports/Personal/
+Content/Private/
+Content/GeneratedPrivate/
+Saved/ImportedPhotos/
+Saved/AvatarSourcePhotos/
