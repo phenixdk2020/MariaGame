@@ -366,6 +366,7 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AMariaPrototypeCharacter::MoveRight);
     PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AMariaPrototypeCharacter::Turn);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AMariaPrototypeCharacter::LookUp);
+    PlayerInputComponent->BindAxis(TEXT("Zoom"), this, &AMariaPrototypeCharacter::Zoom);
 
     PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &AMariaPrototypeCharacter::Interact);
     PlayerInputComponent->BindAction(TEXT("Preview"), IE_Pressed, this, &AMariaPrototypeCharacter::TogglePreviewMode);
@@ -374,6 +375,15 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("HairBlonde"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBlonde);
     PlayerInputComponent->BindAction(TEXT("HairBrown"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBrown);
     PlayerInputComponent->BindAction(TEXT("HairBlack"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBlack);
+
+    PlayerInputComponent->BindAction(TEXT("OutfitSlot1"), IE_Pressed, this, &AMariaPrototypeCharacter::SelectOutfitSlot1);
+    PlayerInputComponent->BindAction(TEXT("OutfitSlot2"), IE_Pressed, this, &AMariaPrototypeCharacter::SelectOutfitSlot2);
+    PlayerInputComponent->BindAction(TEXT("OutfitSlot3"), IE_Pressed, this, &AMariaPrototypeCharacter::SelectOutfitSlot3);
+
+    PlayerInputComponent->BindAction(TEXT("ViewFront"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewFront);
+    PlayerInputComponent->BindAction(TEXT("ViewBack"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewBack);
+    PlayerInputComponent->BindAction(TEXT("ViewLeft"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewLeft);
+    PlayerInputComponent->BindAction(TEXT("ViewRight"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewRight);
 }
 
 void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
@@ -427,6 +437,19 @@ void AMariaPrototypeCharacter::LookUp(float Value)
     }
 }
 
+void AMariaPrototypeCharacter::Zoom(float Value)
+{
+    if (!bPreviewMode || FMath::IsNearlyZero(Value) || !CameraBoom)
+    {
+        return;
+    }
+
+    CameraBoom->TargetArmLength = FMath::Clamp(
+        CameraBoom->TargetArmLength - Value * 45.0f,
+        260.0f,
+        650.0f);
+}
+
 void AMariaPrototypeCharacter::Interact()
 {
     if (!bPreviewMode && FocusedInteractable.GetObject())
@@ -438,13 +461,23 @@ void AMariaPrototypeCharacter::Interact()
 void AMariaPrototypeCharacter::TogglePreviewMode()
 {
     bPreviewMode = !bPreviewMode;
-    CameraBoom->TargetArmLength = bPreviewMode ? 520.0f : 430.0f;
+    CameraBoom->TargetArmLength = bPreviewMode ? 440.0f : 430.0f;
 
-    if (bPreviewMode && FocusedInteractable.GetObject())
+    if (bPreviewMode)
     {
-        IMariaInteractable::Execute_SetFocused(FocusedInteractable.GetObject(), false);
-        FocusedInteractable.SetObject(nullptr);
-        FocusedInteractable.SetInterface(nullptr);
+        if (Controller)
+        {
+            Controller->SetControlRotation(FRotator(-4.0f, 0.0f, 0.0f));
+        }
+
+        PreviewFront();
+
+        if (FocusedInteractable.GetObject())
+        {
+            IMariaInteractable::Execute_SetFocused(FocusedInteractable.GetObject(), false);
+            FocusedInteractable.SetObject(nullptr);
+            FocusedInteractable.SetInterface(nullptr);
+        }
     }
 }
 
@@ -464,7 +497,8 @@ void AMariaPrototypeCharacter::SaveOutfit()
     }
 
     SaveGame->EquippedItems = Wardrobe->EquippedItems;
-    UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("MariaOutfit"), 0);
+    const FString SlotName = FString::Printf(TEXT("MariaOutfit_%d"), OutfitSlotIndex);
+    UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
 }
 
 void AMariaPrototypeCharacter::LoadOutfit()
@@ -474,8 +508,9 @@ void AMariaPrototypeCharacter::LoadOutfit()
         return;
     }
 
+    const FString SlotName = FString::Printf(TEXT("MariaOutfit_%d"), OutfitSlotIndex);
     UMariaOutfitSaveGame* SaveGame = Cast<UMariaOutfitSaveGame>(
-        UGameplayStatics::LoadGameFromSlot(TEXT("MariaOutfit"), 0));
+        UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 
     if (!SaveGame)
     {
@@ -509,6 +544,53 @@ void AMariaPrototypeCharacter::LoadOutfit()
                 break;
             }
         }
+    }
+}
+
+void AMariaPrototypeCharacter::SelectOutfitSlot1()
+{
+    OutfitSlotIndex = 1;
+}
+
+void AMariaPrototypeCharacter::SelectOutfitSlot2()
+{
+    OutfitSlotIndex = 2;
+}
+
+void AMariaPrototypeCharacter::SelectOutfitSlot3()
+{
+    OutfitSlotIndex = 3;
+}
+
+void AMariaPrototypeCharacter::PreviewFront()
+{
+    if (bPreviewMode)
+    {
+        SetActorRotation(FRotator(0.0f, 180.0f, 0.0f));
+    }
+}
+
+void AMariaPrototypeCharacter::PreviewBack()
+{
+    if (bPreviewMode)
+    {
+        SetActorRotation(FRotator::ZeroRotator);
+    }
+}
+
+void AMariaPrototypeCharacter::PreviewLeft()
+{
+    if (bPreviewMode)
+    {
+        SetActorRotation(FRotator(0.0f, 90.0f, 0.0f));
+    }
+}
+
+void AMariaPrototypeCharacter::PreviewRight()
+{
+    if (bPreviewMode)
+    {
+        SetActorRotation(FRotator(0.0f, -90.0f, 0.0f));
     }
 }
 
