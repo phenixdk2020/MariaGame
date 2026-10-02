@@ -25,6 +25,7 @@ public:
     FString GetFocusedItemText() const;
     FString GetHairPresetName() const { return HairPresetName; }
     int32 GetOutfitSlotIndex() const { return OutfitSlotIndex; }
+    bool IsImportPanelVisible() const { return bImportPanelVisible; }
     bool IsPreviewModeActive() const { return bPreviewMode; }
 
 protected:
@@ -82,6 +83,7 @@ private:
     TScriptInterface<IMariaInteractable> FocusedInteractable;
 
     bool bPreviewMode = false;
+    bool bImportPanelVisible = false;
     int32 OutfitSlotIndex = 1;
     FString HairPresetName = TEXT("Brun");
 
@@ -102,6 +104,7 @@ private:
     void PreviewBack();
     void PreviewLeft();
     void PreviewRight();
+    void ToggleImportPanel();
 
     void HairBlonde();
     void HairBrown();
