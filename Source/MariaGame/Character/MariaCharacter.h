@@ -7,6 +7,7 @@
 
 class USkeletalMeshComponent;
 class UMariaWardrobeComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class MARIAGAME_API AMariaCharacter : public ACharacter
