@@ -1,7 +1,9 @@
 #include "MariaHangerActor.h"
 #include "Character/MariaCharacter.h"
+#include "Wardrobe/MariaWardrobeComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "EngineUtils.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMariaHangerActor::AMariaHangerActor()
@@ -61,9 +63,52 @@ void AMariaHangerActor::Interact_Implementation(AActor* Interactor)
     }
 
     AMariaCharacter* Maria = Cast<AMariaCharacter>(Interactor);
-    if (!Maria)
+    if (!Maria || !Maria->Wardrobe)
     {
         return;
+    }
+
+    auto RestoreItemToHanger = [this](FName ItemId)
+    {
+        if (ItemId.IsNone() || !GetWorld())
+        {
+            return;
+        }
+
+        for (TActorIterator<AMariaHangerActor> It(GetWorld()); It; ++It)
+        {
+            AMariaHangerActor* Hanger = *It;
+            if (Hanger && Hanger->ClothingItem.ItemId == ItemId)
+            {
+                Hanger->SetOccupied(true);
+                break;
+            }
+        }
+    };
+
+    auto RestoreEquippedSlot = [&](EMariaClothingSlot Slot)
+    {
+        if (const FName* ExistingItemId = Maria->Wardrobe->EquippedItems.Find(Slot))
+        {
+            RestoreItemToHanger(*ExistingItemId);
+        }
+    };
+
+    if (ClothingItem.Slot == EMariaClothingSlot::Dress)
+    {
+        RestoreEquippedSlot(EMariaClothingSlot::UpperBody);
+        RestoreEquippedSlot(EMariaClothingSlot::LowerBody);
+        RestoreEquippedSlot(EMariaClothingSlot::Dress);
+    }
+    else if (ClothingItem.Slot == EMariaClothingSlot::UpperBody ||
+             ClothingItem.Slot == EMariaClothingSlot::LowerBody)
+    {
+        RestoreEquippedSlot(ClothingItem.Slot);
+        RestoreEquippedSlot(EMariaClothingSlot::Dress);
+    }
+    else
+    {
+        RestoreEquippedSlot(ClothingItem.Slot);
     }
 
     if (Maria->WearItem(ClothingItem))
