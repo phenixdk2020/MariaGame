@@ -90,5 +90,5 @@ private:
 
     UStaticMeshComponent* GetPrototypeClothingComponent(EMariaClothingSlot Slot) const;
     void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
-    void ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* Mesh, const FVector& Location, const FVector& Scale);
+    void ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* StaticMesh, const FVector& Location, const FVector& Scale);
 };
