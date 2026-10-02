@@ -16,6 +16,9 @@ class MARIAGAME_API AMariaPrototypeCharacter : public AMariaCharacter
 public:
     AMariaPrototypeCharacter();
 
+    virtual bool WearItem(const FMariaClothingItem& Item) override;
+    virtual void RemoveItem(EMariaClothingSlot Slot) override;
+
 protected:
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
     virtual void Tick(float DeltaSeconds) override;
@@ -45,6 +48,21 @@ private:
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UStaticMeshComponent> DummyRightLeg;
 
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> PrototypeUpperBody;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> PrototypeLowerBody;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> PrototypeDress;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> PrototypeJacket;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> PrototypeShoes;
+
     UPROPERTY(EditAnywhere, Category="Interaction")
     float InteractionDistance = 350.0f;
 
@@ -57,4 +75,7 @@ private:
     void LookUp(float Value);
     void Interact();
     void UpdateInteractionFocus();
+
+    UStaticMeshComponent* GetPrototypeClothingComponent(EMariaClothingSlot Slot) const;
+    void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
 };
