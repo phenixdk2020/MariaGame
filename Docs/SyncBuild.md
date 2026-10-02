@@ -6,7 +6,7 @@ Hovedscript:
 .\Tools\Sync-And-Build-MariaGame.ps1
 ```
 
-Version 2.0.0 gør hele flowet:
+Version 2.1.0 gør hele flowet:
 
 1. tjekker Git, repo, `.uproject` og Unreal Engine
 2. registrerer branch + upstream
@@ -90,19 +90,19 @@ Hvis en stash ikke kan lægges tilbage rent, beholdes den i Git.
 Fuld sessionlog:
 
 ```text
-Tools\BuildLogs\SyncBuild_YYYYMMDD_HHMMSS.log
+Saved\BuildLogs\SyncBuild_YYYYMMDD_HHMMSS.log
 ```
 
 Fuld buildlog:
 
 ```text
-Tools\BuildLogs\Build_YYYYMMDD_HHMMSS.log
+Saved\BuildLogs\Build_YYYYMMDD_HHMMSS.log
 ```
 
 Seneste kondenserede fejlrapport:
 
 ```text
-Tools\BuildLogs\LatestBuildErrors.txt
+Saved\BuildLogs\LatestBuildErrors.txt
 ```
 
 Ved compile-fejl viser konsollen de første relevante fejl direkte.
@@ -159,3 +159,19 @@ Set-Location "R:\Onedrive\Unreal\MariaGame"
 ```
 
 Det er fremover den kommando, der bør erstatte separate `git pull`- og `Build.bat`-kommandoer.
+
+
+## v2.1 fix
+
+Version 2.0 kunne fejle, hvis `Tools\BuildLogs` var untracked og scriptet samtidig kørte `git stash --include-untracked`. Git kunne da stash'e selve den mappe, som scriptet skrev loggen til. Unreal/OneDrive-låste filer som `Content/Collections` kunne også få stash-operationen til at fejle.
+
+Version 2.1 ændrer derfor modellen:
+
+- logs ligger i `Saved\BuildLogs`
+- kun **tracked** ændringer auto-stashes
+- untracked filer røres ikke
+- untracked filer sammenlignes med incoming Git-paths før pull
+- gamle `MariaGame AutoStash` entries vises, men ændres ikke automatisk
+- `Tools\BuildLogs` og `Content\Collections` ignoreres fremover
+
+Det betyder, at editor-genererede eller låste untracked filer ikke længere skal kunne ødelægge sync/build-flowet.
