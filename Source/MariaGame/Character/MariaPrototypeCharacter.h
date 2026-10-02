@@ -6,6 +6,7 @@
 
 class USpringArmComponent;
 class UCameraComponent;
+class UStaticMeshComponent;
 
 UCLASS()
 class MARIAGAME_API AMariaPrototypeCharacter : public AMariaCharacter
@@ -25,6 +26,24 @@ private:
 
     UPROPERTY(VisibleAnywhere)
     TObjectPtr<UCameraComponent> FollowCamera;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyHead;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyTorso;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyLeftArm;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyRightArm;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyLeftLeg;
+
+    UPROPERTY(VisibleAnywhere)
+    TObjectPtr<UStaticMeshComponent> DummyRightLeg;
 
     UPROPERTY(EditAnywhere, Category="Interaction")
     float InteractionDistance = 350.0f;
