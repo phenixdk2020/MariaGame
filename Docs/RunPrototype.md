@@ -1,13 +1,15 @@
-# MariaGame – Kør prototype 0.1
+# MariaGame – Kør prototype 0.2
 
-## Clone
+## Clone / update
+
+Første gang:
 
 ```powershell
 git clone https://github.com/phenixdk2020/MariaGame.git
 cd MariaGame
 ```
 
-Har du allerede projektet:
+Hvis projektet allerede findes:
 
 ```powershell
 git pull
@@ -18,46 +20,74 @@ git pull
 Projektet er sat op til Unreal Engine 5.8.
 
 1. Højreklik på `MariaGame.uproject`.
-2. Vælg **Generate Visual Studio project files**.
-3. Åbn `MariaGame.sln`.
-4. Build target: **Development Editor / Win64**.
-5. Åbn `MariaGame.uproject`.
-6. Tryk **Play**.
+2. Vælg **Generate Visual Studio project files**, hvis nødvendigt.
+3. Build target: **MariaGameEditor / Development / Win64**.
+4. Åbn `MariaGame.uproject`.
+5. Tryk **Play**.
 
-## Prototype controls
+Direkte build:
 
-- **WASD** – bevæg dummy
+```powershell
+& "I:\Spil\Epic Games\UE_5.8\Engine\Build\BatchFiles\Build.bat" `
+    MariaGameEditor Win64 Development `
+    -Project="R:\Onedrive\Unreal\MariaGame\MariaGame.uproject" `
+    -WaitMutex
+```
+
+## Controls
+
+- **WASD** – bevæg Maria-prototypen
 - **Mus** – kamera
-- **E** – interager med skab eller bøjle
-- **P** – dressing/360° preview til/fra
+- **E** – åbn/luk garderobe eller tag fokuseret tøj på
+- **P** – 360° preview til/fra
+- **1** – blond hårfarve
+- **2** – brun hårfarve
+- **3** – sort hårfarve
 - **F5** – gem aktuelt outfit
 - **F9** – indlæs gemt outfit
 
-## Forventet prototype
+## Prototype 0.2 indeholder
 
-Ved runtime oprettes:
+Ved runtime oprettes nu:
 
-- simpelt gulv
-- dummy-Maria
-- prototype-garderobeskab
-- 5 bøjler
-- 5 placeholder-beklædningsgenstande
+- lukket dressing-room med gulv, vægge og loft
+- avatar-podie
+- spejlområde
+- bænk
+- loftlys + avatar key/fill lights
+- forbedret mannequin med hals, skuldre, hænder og fødder
+- underwear/base layer
+- hår-placeholder med tre farve-presets
+- fysisk garderobe med kabinet, hylder, skohylde og hængestang
+- animerede garderobedøre med hængsler
+- 7 strukturerede bøjler
+- T-shirt
+- bluse
+- sweater
+- bukser
+- kjole
+- jakke
+- sko
+- center-reticle
+- interaction prompt
+- tøjnavn og kategori
+- debug HUD med preview-status, hårfarve og equipped slots
 
-### Testflow
+## Testflow
 
-1. Gå hen til garderoben.
-2. Peg på skabet og tryk **E** for at åbne dørene.
-3. Peg på en bøjle og tryk **E**.
-4. Tøjet fjernes visuelt fra bøjlen og vises på dummyen.
-5. Vælg et andet stykke tøj i samme slot.
-6. Det gamle stykke tøj lægges automatisk tilbage på sin bøjle.
-7. Tryk **P** for at gå i preview-mode.
-8. Bevæg musen vandret for at rotere dummyen.
-9. Tryk **F5** for at gemme outfittet.
-10. Tryk **F9** for at gendanne det.
+1. Start Play.
+2. Kontrollér at HUD vises.
+3. Gå hen til garderoben.
+4. Peg på garderoben; HUD skal vise **E - Åbn garderobe**.
+5. Tryk **E** og kontrollér den glidende døranimation.
+6. Peg på en bøjle.
+7. HUD skal vise tøjnavn, kategori og **E - Tag ... på**.
+8. Tryk **E** og kontrollér at tøjet flyttes fra bøjlen til avatarens slot.
+9. Vælg et andet stykke tøj i samme slot og kontrollér, at det gamle returneres.
+10. Test **1 / 2 / 3** for hårfarve.
+11. Test **P** og roter avatar med musen.
+12. Test **F5** og **F9**.
 
-Kjole og overdel/underdel håndteres som gensidigt eksklusive lag i prototypen.
+## Kendt prototype-begrænsning
 
-## Bemærkning
-
-Der bruges midlertidigt Unreal Engine-primitiver til dummy, skab, bøjler og tøj. Systemarkitekturen er lavet sådan, at de senere kan erstattes af den rigtige Maria-avatar og riggede beklædningsmodeller uden at omskrive wardrobe-logikken.
+Geometrien er stadig genereret af Unreal Engine-primitiver. Formålet med 0.2 er at få rum, interaktion, garderobe, HUD og slot-logik på plads. Næste større trin er humanoid/rigged avatar, rigtige garments, outfit-browser og foto-/tøjimport.
