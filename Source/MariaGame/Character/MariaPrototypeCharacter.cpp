@@ -3,8 +3,11 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
+#include "UObject/ConstructorHelpers.h"
 
 AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 {
@@ -18,6 +21,50 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
     FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
     FollowCamera->bUsePawnControlRotation = false;
+
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+
+    DummyHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyHead"));
+    DummyHead->SetupAttachment(RootComponent);
+    DummyHead->SetRelativeLocation(FVector(0.0f, 0.0f, 72.0f));
+    DummyHead->SetRelativeScale3D(FVector(0.22f));
+    if (SphereMesh.Succeeded()) DummyHead->SetStaticMesh(SphereMesh.Object);
+
+    DummyTorso = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyTorso"));
+    DummyTorso->SetupAttachment(RootComponent);
+    DummyTorso->SetRelativeLocation(FVector(0.0f, 0.0f, 25.0f));
+    DummyTorso->SetRelativeScale3D(FVector(0.34f, 0.20f, 0.52f));
+    if (CubeMesh.Succeeded()) DummyTorso->SetStaticMesh(CubeMesh.Object);
+
+    DummyLeftArm = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftArm"));
+    DummyLeftArm->SetupAttachment(RootComponent);
+    DummyLeftArm->SetRelativeLocation(FVector(0.0f, -30.0f, 28.0f));
+    DummyLeftArm->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.50f));
+    if (CubeMesh.Succeeded()) DummyLeftArm->SetStaticMesh(CubeMesh.Object);
+
+    DummyRightArm = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightArm"));
+    DummyRightArm->SetupAttachment(RootComponent);
+    DummyRightArm->SetRelativeLocation(FVector(0.0f, 30.0f, 28.0f));
+    DummyRightArm->SetRelativeScale3D(FVector(0.10f, 0.10f, 0.50f));
+    if (CubeMesh.Succeeded()) DummyRightArm->SetStaticMesh(CubeMesh.Object);
+
+    DummyLeftLeg = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftLeg"));
+    DummyLeftLeg->SetupAttachment(RootComponent);
+    DummyLeftLeg->SetRelativeLocation(FVector(0.0f, -13.0f, -38.0f));
+    DummyLeftLeg->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.58f));
+    if (CubeMesh.Succeeded()) DummyLeftLeg->SetStaticMesh(CubeMesh.Object);
+
+    DummyRightLeg = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightLeg"));
+    DummyRightLeg->SetupAttachment(RootComponent);
+    DummyRightLeg->SetRelativeLocation(FVector(0.0f, 13.0f, -38.0f));
+    DummyRightLeg->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.58f));
+    if (CubeMesh.Succeeded()) DummyRightLeg->SetStaticMesh(CubeMesh.Object);
+
+    for (UStaticMeshComponent* Part : {DummyHead.Get(), DummyTorso.Get(), DummyLeftArm.Get(), DummyRightArm.Get(), DummyLeftLeg.Get(), DummyRightLeg.Get()})
+    {
+        Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    }
 
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -84,11 +131,6 @@ void AMariaPrototypeCharacter::UpdateInteractionFocus()
     GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params);
 
     UObject* NewObject = Hit.GetActor();
-    if (!NewObject || !NewObject->GetClass()->ImplementsInterface(UMariaInteractable::StaticClass()))
-    {
-        NewObject = Hit.GetComponent();
-    }
-
     if (!NewObject || !NewObject->GetClass()->ImplementsInterface(UMariaInteractable::StaticClass()))
     {
         NewObject = nullptr;
