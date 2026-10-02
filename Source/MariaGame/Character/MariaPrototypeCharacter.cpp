@@ -443,6 +443,8 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAction(TEXT("ViewLeft"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewLeft);
     PlayerInputComponent->BindAction(TEXT("ViewRight"), IE_Pressed, this, &AMariaPrototypeCharacter::PreviewRight);
     PlayerInputComponent->BindAction(TEXT("ToggleImport"), IE_Pressed, this, &AMariaPrototypeCharacter::ToggleImportPanel);
+    PlayerInputComponent->BindAction(TEXT("ToggleDebugHud"), IE_Pressed, this, &AMariaPrototypeCharacter::ToggleDebugHud);
+    PlayerInputComponent->BindAction(TEXT("ToggleHelp"), IE_Pressed, this, &AMariaPrototypeCharacter::ToggleHelp);
 }
 
 void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
@@ -557,7 +559,10 @@ void AMariaPrototypeCharacter::SaveOutfit()
 
     SaveGame->EquippedItems = Wardrobe->EquippedItems;
     const FString SlotName = FString::Printf(TEXT("MariaOutfit_%d"), OutfitSlotIndex);
-    UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+    const bool bSaved = UGameplayStatics::SaveGameToSlot(SaveGame, SlotName, 0);
+    SetStatusMessage(bSaved
+        ? FString::Printf(TEXT("Outfit gemt i slot %d"), OutfitSlotIndex)
+        : FString::Printf(TEXT("Kunne ikke gemme outfit-slot %d"), OutfitSlotIndex));
 }
 
 void AMariaPrototypeCharacter::LoadOutfit()
@@ -573,6 +578,7 @@ void AMariaPrototypeCharacter::LoadOutfit()
 
     if (!SaveGame)
     {
+        SetStatusMessage(FString::Printf(TEXT("Intet gemt outfit i slot %d"), OutfitSlotIndex));
         return;
     }
 
@@ -586,6 +592,8 @@ void AMariaPrototypeCharacter::LoadOutfit()
     RemoveItem(EMariaClothingSlot::Dress);
     RemoveItem(EMariaClothingSlot::Jacket);
     RemoveItem(EMariaClothingSlot::Shoes);
+
+    SetStatusMessage(FString::Printf(TEXT("Outfit hentet fra slot %d"), OutfitSlotIndex));
 
     for (const TPair<EMariaClothingSlot, FName>& Pair : SaveGame->EquippedItems)
     {
@@ -609,16 +617,19 @@ void AMariaPrototypeCharacter::LoadOutfit()
 void AMariaPrototypeCharacter::SelectOutfitSlot1()
 {
     OutfitSlotIndex = 1;
+    SetStatusMessage(TEXT("Outfit-slot 1 valgt"));
 }
 
 void AMariaPrototypeCharacter::SelectOutfitSlot2()
 {
     OutfitSlotIndex = 2;
+    SetStatusMessage(TEXT("Outfit-slot 2 valgt"));
 }
 
 void AMariaPrototypeCharacter::SelectOutfitSlot3()
 {
     OutfitSlotIndex = 3;
+    SetStatusMessage(TEXT("Outfit-slot 3 valgt"));
 }
 
 void AMariaPrototypeCharacter::PreviewFront()
@@ -656,6 +667,33 @@ void AMariaPrototypeCharacter::PreviewRight()
 void AMariaPrototypeCharacter::ToggleImportPanel()
 {
     bImportPanelVisible = !bImportPanelVisible;
+    SetStatusMessage(bImportPanelVisible ? TEXT("Tøjimport åbnet") : TEXT("Tøjimport lukket"), 1.5f);
+}
+
+void AMariaPrototypeCharacter::ToggleDebugHud()
+{
+    bDebugHudVisible = !bDebugHudVisible;
+}
+
+void AMariaPrototypeCharacter::ToggleHelp()
+{
+    bHelpVisible = !bHelpVisible;
+}
+
+void AMariaPrototypeCharacter::SetStatusMessage(const FString& Message, float Duration)
+{
+    LastStatusMessage = Message;
+    StatusMessageUntil = GetWorld() ? GetWorld()->GetTimeSeconds() + Duration : 0.0f;
+}
+
+FString AMariaPrototypeCharacter::GetStatusMessage() const
+{
+    if (!GetWorld() || LastStatusMessage.IsEmpty() || GetWorld()->GetTimeSeconds() > StatusMessageUntil)
+    {
+        return FString();
+    }
+
+    return LastStatusMessage;
 }
 
 void AMariaPrototypeCharacter::HairBlonde()
@@ -676,6 +714,7 @@ void AMariaPrototypeCharacter::HairBlack()
 void AMariaPrototypeCharacter::SetPrototypeHairColor(const FLinearColor& Color, const FString& PresetName)
 {
     HairPresetName = PresetName;
+    SetStatusMessage(FString::Printf(TEXT("Hårfarve: %s"), *PresetName), 1.5f);
 
     if (!PrototypeHairMaterial && PrototypeHair && PrototypeHair->GetNumMaterials() > 0)
     {
