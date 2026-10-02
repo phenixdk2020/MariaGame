@@ -38,6 +38,7 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyHead;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyNeck;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyTorso;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyPelvis;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyLeftShoulder;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyRightShoulder;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyLeftArm;
@@ -48,6 +49,9 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyRightLeg;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyLeftFoot;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyRightFoot;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyLeftEye;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyRightEye;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> DummyNose;
 
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> BaseUnderwearTop;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> BaseUnderwearBottom;
@@ -91,4 +95,5 @@ private:
     UStaticMeshComponent* GetPrototypeClothingComponent(EMariaClothingSlot Slot) const;
     void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
     void ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* StaticMesh, const FVector& Location, const FVector& Scale);
+    void ApplyPrototypeColor(UStaticMeshComponent* Component, const FLinearColor& Color, float Roughness = 0.55f, float Metallic = 0.0f);
 };
