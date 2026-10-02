@@ -317,12 +317,57 @@ bool AMariaPrototypeCharacter::WearItem(const FMariaClothingItem& Item)
 
     if (UStaticMeshComponent* Component = GetPrototypeClothingComponent(Item.Slot))
     {
-        Component->SetRelativeScale3D(Item.PreviewScale);
+        FVector AvatarScale = Item.PreviewScale;
+
+        switch (Item.Slot)
+        {
+            case EMariaClothingSlot::UpperBody:
+                AvatarScale = FVector(0.30f, 0.205f, 0.29f);
+                break;
+
+            case EMariaClothingSlot::LowerBody:
+                AvatarScale = FVector(0.22f, 0.18f, 0.13f);
+                break;
+
+            case EMariaClothingSlot::Dress:
+                AvatarScale = FVector(0.33f, 0.26f, 0.60f);
+                break;
+
+            case EMariaClothingSlot::Jacket:
+                AvatarScale = FVector(0.33f, 0.23f, 0.33f);
+                break;
+
+            case EMariaClothingSlot::Shoes:
+                AvatarScale = FVector(0.01f);
+                break;
+
+            default:
+                break;
+        }
+
+        Component->SetRelativeScale3D(AvatarScale);
         ApplyPrototypeColor(Component, Item.PreviewColor, 0.62f, 0.0f);
-        Component->SetVisibility(true, true);
-        SetPrototypeSlotExtrasVisible(Item.Slot, true, Item.PreviewColor);
+        Component->SetVisibility(Item.Slot != EMariaClothingSlot::Shoes, true);
     }
 
+    if (Item.Slot == EMariaClothingSlot::UpperBody)
+    {
+        float SleeveLength = 0.22f;
+
+        if (Item.ItemId == TEXT("Prototype_TShirt"))
+        {
+            SleeveLength = 0.12f;
+        }
+        else if (Item.ItemId == TEXT("Prototype_Sweater"))
+        {
+            SleeveLength = 0.30f;
+        }
+
+        PrototypeUpperSleeveLeft->SetRelativeScale3D(FVector(0.085f, 0.085f, SleeveLength));
+        PrototypeUpperSleeveRight->SetRelativeScale3D(FVector(0.085f, 0.085f, SleeveLength));
+    }
+
+    SetPrototypeSlotExtrasVisible(Item.Slot, true, Item.PreviewColor);
     return true;
 }
 
@@ -344,16 +389,29 @@ void AMariaPrototypeCharacter::RemoveItem(EMariaClothingSlot Slot)
 
     if (Slot == EMariaClothingSlot::Dress)
     {
-        if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::UpperBody))
+        if (Wardrobe)
         {
-            PrototypeUpperBody->SetVisibility(true, true);
-            SetPrototypeSlotExtrasVisible(EMariaClothingSlot::UpperBody, true, FLinearColor(0.14f, 0.30f, 0.62f, 1.0f));
-        }
+            if (const FName* UpperId = Wardrobe->EquippedItems.Find(EMariaClothingSlot::UpperBody))
+            {
+                FMariaClothingItem UpperItem;
+                if (Wardrobe->FindItem(*UpperId, UpperItem))
+                {
+                    PrototypeUpperBody->SetVisibility(true, true);
+                    ApplyPrototypeColor(PrototypeUpperBody, UpperItem.PreviewColor, 0.62f, 0.0f);
+                    SetPrototypeSlotExtrasVisible(EMariaClothingSlot::UpperBody, true, UpperItem.PreviewColor);
+                }
+            }
 
-        if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::LowerBody))
-        {
-            PrototypeLowerBody->SetVisibility(true, true);
-            SetPrototypeSlotExtrasVisible(EMariaClothingSlot::LowerBody, true, FLinearColor(0.05f, 0.08f, 0.14f, 1.0f));
+            if (const FName* LowerId = Wardrobe->EquippedItems.Find(EMariaClothingSlot::LowerBody))
+            {
+                FMariaClothingItem LowerItem;
+                if (Wardrobe->FindItem(*LowerId, LowerItem))
+                {
+                    PrototypeLowerBody->SetVisibility(true, true);
+                    ApplyPrototypeColor(PrototypeLowerBody, LowerItem.PreviewColor, 0.62f, 0.0f);
+                    SetPrototypeSlotExtrasVisible(EMariaClothingSlot::LowerBody, true, LowerItem.PreviewColor);
+                }
+            }
         }
     }
 }
