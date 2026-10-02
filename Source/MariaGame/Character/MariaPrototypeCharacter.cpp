@@ -61,6 +61,27 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     DummyRightLeg->SetRelativeScale3D(FVector(0.14f, 0.14f, 0.58f));
     if (CubeMesh.Succeeded()) DummyRightLeg->SetStaticMesh(CubeMesh.Object);
 
+    PrototypeUpperBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeUpperBody"));
+    PrototypeLowerBody = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeLowerBody"));
+    PrototypeDress = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeDress"));
+    PrototypeJacket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeJacket"));
+    PrototypeShoes = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeShoes"));
+
+    if (CubeMesh.Succeeded())
+    {
+        PrototypeUpperBody->SetStaticMesh(CubeMesh.Object);
+        PrototypeLowerBody->SetStaticMesh(CubeMesh.Object);
+        PrototypeDress->SetStaticMesh(CubeMesh.Object);
+        PrototypeJacket->SetStaticMesh(CubeMesh.Object);
+        PrototypeShoes->SetStaticMesh(CubeMesh.Object);
+    }
+
+    ConfigurePrototypeClothing(PrototypeUpperBody, FVector(-1.0f, 0.0f, 28.0f), FVector(0.37f, 0.23f, 0.32f));
+    ConfigurePrototypeClothing(PrototypeLowerBody, FVector(-1.0f, 0.0f, -24.0f), FVector(0.31f, 0.22f, 0.40f));
+    ConfigurePrototypeClothing(PrototypeDress, FVector(-2.0f, 0.0f, 5.0f), FVector(0.39f, 0.25f, 0.65f));
+    ConfigurePrototypeClothing(PrototypeJacket, FVector(-3.0f, 0.0f, 30.0f), FVector(0.41f, 0.27f, 0.36f));
+    ConfigurePrototypeClothing(PrototypeShoes, FVector(0.0f, 0.0f, -82.0f), FVector(0.28f, 0.30f, 0.10f));
+
     for (UStaticMeshComponent* Part : {DummyHead.Get(), DummyTorso.Get(), DummyLeftArm.Get(), DummyRightArm.Get(), DummyLeftLeg.Get(), DummyRightLeg.Get()})
     {
         Part->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -68,6 +89,77 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void AMariaPrototypeCharacter::ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale)
+{
+    Component->SetupAttachment(RootComponent);
+    Component->SetRelativeLocation(Location);
+    Component->SetRelativeScale3D(Scale);
+    Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    Component->SetVisibility(false, true);
+}
+
+UStaticMeshComponent* AMariaPrototypeCharacter::GetPrototypeClothingComponent(EMariaClothingSlot Slot) const
+{
+    switch (Slot)
+    {
+        case EMariaClothingSlot::UpperBody: return PrototypeUpperBody;
+        case EMariaClothingSlot::LowerBody: return PrototypeLowerBody;
+        case EMariaClothingSlot::Dress: return PrototypeDress;
+        case EMariaClothingSlot::Jacket: return PrototypeJacket;
+        case EMariaClothingSlot::Shoes: return PrototypeShoes;
+        default: return nullptr;
+    }
+}
+
+bool AMariaPrototypeCharacter::WearItem(const FMariaClothingItem& Item)
+{
+    const bool bBaseResult = Super::WearItem(Item);
+    if (!bBaseResult)
+    {
+        return false;
+    }
+
+    if (Item.Slot == EMariaClothingSlot::Dress)
+    {
+        PrototypeUpperBody->SetVisibility(false, true);
+        PrototypeLowerBody->SetVisibility(false, true);
+    }
+    else if (Item.Slot == EMariaClothingSlot::UpperBody || Item.Slot == EMariaClothingSlot::LowerBody)
+    {
+        PrototypeDress->SetVisibility(false, true);
+    }
+
+    if (UStaticMeshComponent* Component = GetPrototypeClothingComponent(Item.Slot))
+    {
+        Component->SetRelativeScale3D(Item.PreviewScale);
+        Component->SetVisibility(true, true);
+    }
+
+    return true;
+}
+
+void AMariaPrototypeCharacter::RemoveItem(EMariaClothingSlot Slot)
+{
+    Super::RemoveItem(Slot);
+
+    if (UStaticMeshComponent* Component = GetPrototypeClothingComponent(Slot))
+    {
+        Component->SetVisibility(false, true);
+    }
+
+    if (Slot == EMariaClothingSlot::Dress)
+    {
+        if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::UpperBody))
+        {
+            PrototypeUpperBody->SetVisibility(true, true);
+        }
+        if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::LowerBody))
+        {
+            PrototypeLowerBody->SetVisibility(true, true);
+        }
+    }
 }
 
 void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
