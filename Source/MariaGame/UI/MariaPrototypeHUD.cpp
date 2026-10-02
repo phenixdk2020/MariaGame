@@ -41,15 +41,18 @@ void AMariaPrototypeHUD::DrawHUD()
     const float Width = Canvas->ClipX;
     const float Height = Canvas->ClipY;
 
-    DrawText(TEXT("MariaGame  v0.2  Dressing Room"), FLinearColor::White, 28.0f, 24.0f, Font, 1.25f, false);
-    DrawText(TEXT("WASD: bevæg  |  Mus: kamera  |  E: interager  |  P: preview  |  F5/F9: gem/hent outfit"), 
-        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 52.0f, Font, 0.95f, false);
-    DrawText(TEXT("1/2/3: hårfarve  |  F6/F7/F8: outfit-slot 1/2/3"), 
-        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 72.0f, Font, 0.95f, false);
-    DrawText(TEXT("Preview: F1 front  F2 bag  F3 venstre  F4 højre  |  Musehjul: zoom"), 
-        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 92.0f, Font, 0.95f, false);
-    DrawText(TEXT("I: tøjimport-panel"), 
-        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 112.0f, Font, 0.95f, false);
+    if (Maria->IsHelpVisible())
+    {
+        DrawText(TEXT("MariaGame  v0.2  Dressing Room"), FLinearColor::White, 28.0f, 24.0f, Font, 1.25f, false);
+        DrawText(TEXT("WASD: bevæg  |  Mus: kamera  |  E: interager  |  P: preview  |  F5/F9: gem/hent outfit"), 
+            FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 52.0f, Font, 0.95f, false);
+        DrawText(TEXT("1/2/3: hårfarve  |  F6/F7/F8: outfit-slot 1/2/3"), 
+            FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 72.0f, Font, 0.95f, false);
+        DrawText(TEXT("Preview: F1 front  F2 bag  F3 venstre  F4 højre  |  Musehjul: zoom"), 
+            FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 92.0f, Font, 0.95f, false);
+        DrawText(TEXT("I: tøjimport  |  F10: debug  |  H: hjælp"), 
+            FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 112.0f, Font, 0.95f, false);
+    }
 
 
     if (Maria->IsImportPanelVisible())
@@ -91,8 +94,20 @@ void AMariaPrototypeHUD::DrawHUD()
     }
 
     // Crosshair
-    DrawRect(FLinearColor::White, Width * 0.5f - 8.0f, Height * 0.5f - 1.0f, 16.0f, 2.0f);
-    DrawRect(FLinearColor::White, Width * 0.5f - 1.0f, Height * 0.5f - 8.0f, 2.0f, 16.0f);
+    if (!Maria->IsPreviewModeActive() && !Maria->IsImportPanelVisible())
+    {
+        DrawRect(FLinearColor::White, Width * 0.5f - 8.0f, Height * 0.5f - 1.0f, 16.0f, 2.0f);
+        DrawRect(FLinearColor::White, Width * 0.5f - 1.0f, Height * 0.5f - 8.0f, 2.0f, 16.0f);
+    }
+
+
+    const FString StatusMessage = Maria->GetStatusMessage();
+    if (!StatusMessage.IsEmpty())
+    {
+        DrawRect(FLinearColor(0.0f, 0.0f, 0.0f, 0.60f), Width * 0.5f - 180.0f, 28.0f, 360.0f, 38.0f);
+        DrawText(StatusMessage, FLinearColor(0.92f, 0.86f, 0.62f, 1.0f),
+            Width * 0.5f - 135.0f, 38.0f, Font, 1.0f, false);
+    }
 
     const FString FocusText = Maria->GetFocusedItemText();
     const FString Prompt = Maria->GetInteractionPrompt();
@@ -108,43 +123,47 @@ void AMariaPrototypeHUD::DrawHUD()
         DrawText(Prompt, FLinearColor(1.0f, 0.92f, 0.55f, 1.0f), Width * 0.5f - 125.0f, Height - 78.0f, Font, 1.15f, false);
     }
 
-    float DebugY = 152.0f;
-    const float DebugX = Width - 280.0f;
-    DrawText(TEXT("DEBUG"), FLinearColor(0.65f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 1.0f, false);
-    DebugY += 20.0f;
-
-    DrawText(FString::Printf(TEXT("Preview: %s"), Maria->IsPreviewModeActive() ? TEXT("ON") : TEXT("OFF")),
-        FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
-    DebugY += 18.0f;
-
-    DrawText(FString::Printf(TEXT("Hår: %s"), *Maria->GetHairPresetName()),
-        FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
-    DebugY += 18.0f;
-
-    DrawText(FString::Printf(TEXT("Outfit-slot: %d"), Maria->GetOutfitSlotIndex()),
-        FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
-    DebugY += 24.0f;
-
-    DrawText(TEXT("Påklædning:"), FLinearColor(0.75f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 0.9f, false);
-    DebugY += 18.0f;
-
-    if (Maria->Wardrobe)
+    if (Maria->IsDebugHudVisible())
     {
-        const EMariaClothingSlot Slots[] = {
-            EMariaClothingSlot::UpperBody,
-            EMariaClothingSlot::LowerBody,
-            EMariaClothingSlot::Dress,
-            EMariaClothingSlot::Jacket,
-            EMariaClothingSlot::Shoes
-        };
-
-        for (EMariaClothingSlot Slot : Slots)
+        float DebugY = 152.0f;
+        const float DebugX = Width - 280.0f;
+        DrawText(TEXT("DEBUG"), FLinearColor(0.65f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 1.0f, false);
+        DebugY += 20.0f;
+    
+        DrawText(FString::Printf(TEXT("Preview: %s"), Maria->IsPreviewModeActive() ? TEXT("ON") : TEXT("OFF")),
+            FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
+        DebugY += 18.0f;
+    
+        DrawText(FString::Printf(TEXT("Hår: %s"), *Maria->GetHairPresetName()),
+            FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
+        DebugY += 18.0f;
+    
+        DrawText(FString::Printf(TEXT("Outfit-slot: %d"), Maria->GetOutfitSlotIndex()),
+            FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
+        DebugY += 24.0f;
+    
+        DrawText(TEXT("Påklædning:"), FLinearColor(0.75f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 0.9f, false);
+        DebugY += 18.0f;
+    
+        if (Maria->Wardrobe)
         {
-            const FName* ItemId = Maria->Wardrobe->EquippedItems.Find(Slot);
-            const FString Value = ItemId ? ItemId->ToString() : TEXT("-");
-            DrawText(FString::Printf(TEXT("%s: %s"), *SlotToString(Slot), *Value),
-                FLinearColor::White, DebugX, DebugY, Font, 0.82f, false);
-            DebugY += 16.0f;
+            const EMariaClothingSlot Slots[] = {
+                EMariaClothingSlot::UpperBody,
+                EMariaClothingSlot::LowerBody,
+                EMariaClothingSlot::Dress,
+                EMariaClothingSlot::Jacket,
+                EMariaClothingSlot::Shoes
+            };
+    
+            for (EMariaClothingSlot Slot : Slots)
+            {
+                const FName* ItemId = Maria->Wardrobe->EquippedItems.Find(Slot);
+                const FString Value = ItemId ? ItemId->ToString() : TEXT("-");
+                DrawText(FString::Printf(TEXT("%s: %s"), *SlotToString(Slot), *Value),
+                    FLinearColor::White, DebugX, DebugY, Font, 0.82f, false);
+                DebugY += 16.0f;
+            }
         }
     }
+
 }
