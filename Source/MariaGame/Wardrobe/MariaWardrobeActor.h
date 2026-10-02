@@ -32,6 +32,7 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> RightDoor;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<USceneComponent> HangerRail;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> HangerRailMesh;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wardrobe")
     TSubclassOf<AMariaHangerActor> HangerClass;
