@@ -44,8 +44,10 @@ void AMariaPrototypeHUD::DrawHUD()
     DrawText(TEXT("MariaGame  v0.2  Dressing Room"), FLinearColor::White, 28.0f, 24.0f, Font, 1.25f, false);
     DrawText(TEXT("WASD: bevæg  |  Mus: kamera  |  E: interager  |  P: preview  |  F5/F9: gem/hent outfit"), 
         FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 52.0f, Font, 0.95f, false);
-    DrawText(TEXT("1/2/3: blond / brun / sort hår"), 
+    DrawText(TEXT("1/2/3: hårfarve  |  F6/F7/F8: outfit-slot 1/2/3"), 
         FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 72.0f, Font, 0.95f, false);
+    DrawText(TEXT("Preview: F1 front  F2 bag  F3 venstre  F4 højre  |  Musehjul: zoom"), 
+        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 92.0f, Font, 0.95f, false);
 
     // Crosshair
     DrawRect(FLinearColor::White, Width * 0.5f - 8.0f, Height * 0.5f - 1.0f, 16.0f, 2.0f);
@@ -65,7 +67,7 @@ void AMariaPrototypeHUD::DrawHUD()
         DrawText(Prompt, FLinearColor(1.0f, 0.92f, 0.55f, 1.0f), Width * 0.5f - 125.0f, Height - 78.0f, Font, 1.15f, false);
     }
 
-    float DebugY = 112.0f;
+    float DebugY = 132.0f;
     const float DebugX = Width - 280.0f;
     DrawText(TEXT("DEBUG"), FLinearColor(0.65f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 1.0f, false);
     DebugY += 20.0f;
@@ -75,6 +77,10 @@ void AMariaPrototypeHUD::DrawHUD()
     DebugY += 18.0f;
 
     DrawText(FString::Printf(TEXT("Hår: %s"), *Maria->GetHairPresetName()),
+        FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
+    DebugY += 18.0f;
+
+    DrawText(FString::Printf(TEXT("Outfit-slot: %d"), Maria->GetOutfitSlotIndex()),
         FLinearColor::White, DebugX, DebugY, Font, 0.9f, false);
     DebugY += 24.0f;
 
