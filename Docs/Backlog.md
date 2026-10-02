@@ -19,49 +19,49 @@ Mål: gå fra teknisk proof-of-concept til en præsentabel Dressing Room prototy
 10. [ ] Egen projekt-startmap i stedet for /Engine/Maps/Entry
 
 ## Sprint 02 – Dressing room
-11. [ ] Byg komplet rum med gulv, fire vægge og loft
+11. [x] Byg komplet rum med gulv, fire vægge og loft
 12. [ ] Tilføj dressing-room zone
 13. [ ] Tilføj spejlramme
-14. [ ] Tilføj platform/podie til avatar-preview
-15. [ ] Tilføj garderobe-zone
-16. [ ] Tilføj dekorativ bænk
+14. [x] Tilføj platform/podie til avatar-preview
+15. [x] Tilføj garderobe-zone
+16. [x] Tilføj dekorativ bænk
 17. [ ] Tilføj loftlys
-18. [ ] Tilføj varmt fill-light
-19. [ ] Tilføj neutral preview-light
-20. [ ] Fjern LIGHTING NEEDS TO BE REBUILT ved runtime-prototypen
+18. [x] Tilføj varmt fill-light
+19. [x] Tilføj neutral preview-light
+20. [x] Fjern LIGHTING NEEDS TO BE REBUILT ved runtime-prototypen
 
 ## Sprint 03 – Avatar v0.2
-21. [ ] Forbedr dummyens menneskelige proportioner
-22. [ ] Tilføj hals
-23. [ ] Tilføj skuldre
-24. [ ] Tilføj hænder
-25. [ ] Tilføj fødder
-26. [ ] Tilføj underwear/base-layer
-27. [ ] Tilføj hår-placeholder
+21. [x] Forbedr dummyens menneskelige proportioner
+22. [x] Tilføj hals
+23. [x] Tilføj skuldre
+24. [x] Tilføj hænder
+25. [x] Tilføj fødder
+26. [x] Tilføj underwear/base-layer
+27. [x] Tilføj hår-placeholder
 28. [ ] Tilføj tre hårfarve-presets
 29. [ ] Tilføj runtime hair-color switching
-30. [ ] Forbedr kameraets højde og framing omkring avatar
+30. [x] Forbedr kameraets højde og framing omkring avatar
 
 ## Sprint 04 – Garderobe v0.2
-31. [ ] Garderobesider, top og bund
-32. [ ] Garderobe-bagplade
+31. [x] Garderobesider, top og bund
+32. [x] Garderobe-bagplade
 33. [ ] Garderobe-hængestang
-34. [ ] Garderobe-hylde
-35. [ ] Sko-hylde
-36. [ ] Garderobedør-hængsler
-37. [ ] Smooth open/close animation
-38. [ ] Bloker hanger interaction når døre er lukkede
+34. [x] Garderobe-hylde
+35. [x] Sko-hylde
+36. [x] Garderobedør-hængsler
+37. [x] Smooth open/close animation
+38. [x] Bloker hanger interaction når døre er lukkede
 39. [ ] Bedre hanger-geometri
-40. [ ] Hanger spacing og automatisk fordeling
+40. [x] Hanger spacing og automatisk fordeling
 
 ## Sprint 05 – Tøj og interaction
-41. [ ] T-shirt placeholder
-42. [ ] Bluse placeholder
-43. [ ] Sweater placeholder
-44. [ ] Bukser placeholder
-45. [ ] Kjole placeholder
-46. [ ] Jakke placeholder
-47. [ ] Sko placeholder
+41. [x] T-shirt placeholder
+42. [x] Bluse placeholder
+43. [x] Sweater placeholder
+44. [x] Bukser placeholder
+45. [x] Kjole placeholder
+46. [x] Jakke placeholder
+47. [x] Sko placeholder
 48. [ ] Interaction prompt: E - Åbn garderobe / Tag på
 49. [ ] Clothing name + category popup
 50. [ ] Debug HUD med equipped slots, focused target og preview-mode
