@@ -52,6 +52,8 @@ Direkte build:
 - **F5** – gem aktuelt outfit i valgt slot
 - **F9** – indlæs valgt outfit-slot
 - **I** – vis/skjul tøjimport-panelet
+- **F10** – vis/skjul debug-HUD
+- **H** – vis/skjul hjælpetekst
 
 ## Prototype 0.2 indeholder
 
@@ -119,6 +121,18 @@ Begge dele i én kommando:
 
 ```powershell
 .\Tools\Sync-And-Build-MariaGame.ps1
+```
+
+Tjek installation og prerequisites:
+
+```powershell
+.\Tools\Check-MariaGame.ps1
+```
+
+Start editoren:
+
+```powershell
+.\Tools\Launch-MariaGame.ps1
 ```
 
 ## Importfundament
