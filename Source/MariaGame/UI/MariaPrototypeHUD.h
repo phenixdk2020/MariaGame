@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "Wardrobe/MariaClothingTypes.h"
 #include "MariaPrototypeHUD.generated.h"
 
 UCLASS()
