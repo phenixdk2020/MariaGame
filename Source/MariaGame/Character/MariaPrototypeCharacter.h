@@ -26,7 +26,10 @@ public:
     FString GetHairPresetName() const { return HairPresetName; }
     int32 GetOutfitSlotIndex() const { return OutfitSlotIndex; }
     bool IsImportPanelVisible() const { return bImportPanelVisible; }
+    bool IsDebugHudVisible() const { return bDebugHudVisible; }
+    bool IsHelpVisible() const { return bHelpVisible; }
     bool IsPreviewModeActive() const { return bPreviewMode; }
+    FString GetStatusMessage() const;
 
 protected:
     virtual void BeginPlay() override;
@@ -84,8 +87,12 @@ private:
 
     bool bPreviewMode = false;
     bool bImportPanelVisible = false;
+    bool bDebugHudVisible = true;
+    bool bHelpVisible = true;
     int32 OutfitSlotIndex = 1;
     FString HairPresetName = TEXT("Brun");
+    FString LastStatusMessage;
+    float StatusMessageUntil = 0.0f;
 
     void MoveForward(float Value);
     void MoveRight(float Value);
@@ -105,6 +112,9 @@ private:
     void PreviewLeft();
     void PreviewRight();
     void ToggleImportPanel();
+    void ToggleDebugHud();
+    void ToggleHelp();
+    void SetStatusMessage(const FString& Message, float Duration = 2.5f);
 
     void HairBlonde();
     void HairBrown();
