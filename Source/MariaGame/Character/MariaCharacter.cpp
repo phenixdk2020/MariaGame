@@ -76,10 +76,19 @@ USkeletalMeshComponent* AMariaCharacter::GetMeshForSlot(EMariaClothingSlot Slot)
 
 bool AMariaCharacter::WearItem(const FMariaClothingItem& Item)
 {
-    USkeletalMeshComponent* TargetMesh = GetMeshForSlot(Item.Slot);
-    if (!TargetMesh || !Item.SkeletalMesh)
+    if (Wardrobe)
     {
-        return false;
+        Wardrobe->AddItem(Item);
+        if (!Wardrobe->EquipItem(Item.ItemId))
+        {
+            return false;
+        }
+    }
+
+    USkeletalMeshComponent* TargetMesh = GetMeshForSlot(Item.Slot);
+    if (!TargetMesh)
+    {
+        return Item.SkeletalMesh == nullptr;
     }
 
     if (Item.Slot == EMariaClothingSlot::Dress)
@@ -93,10 +102,13 @@ bool AMariaCharacter::WearItem(const FMariaClothingItem& Item)
         DressMesh->SetVisibility(false, true);
     }
 
-    TargetMesh->SetSkeletalMesh(Item.SkeletalMesh);
-    TargetMesh->SetVisibility(true, true);
+    if (Item.SkeletalMesh)
+    {
+        TargetMesh->SetSkeletalMesh(Item.SkeletalMesh);
+        TargetMesh->SetVisibility(true, true);
+    }
 
-    return Wardrobe ? Wardrobe->EquipItem(Item.ItemId) : true;
+    return true;
 }
 
 void AMariaCharacter::RemoveItem(EMariaClothingSlot Slot)
