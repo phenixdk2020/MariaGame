@@ -4,7 +4,7 @@
 #include "Engine/StaticMeshActor.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
-#include "UObject/ConstructorHelpers.h"
+#include "Components/StaticMeshComponent.h"
 
 AMariaPrototypeGameMode::AMariaPrototypeGameMode()
 {
@@ -29,7 +29,7 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
     {
         AStaticMeshActor* Floor = GetWorld()->SpawnActor<AStaticMeshActor>(
             AStaticMeshActor::StaticClass(),
-            FVector(0.0f, 0.0f, -55.0f),
+            FVector(0.0f, 0.0f, -100.0f),
             FRotator::ZeroRotator);
 
         if (Floor)
