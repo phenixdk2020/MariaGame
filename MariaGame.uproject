@@ -1,13 +1,27 @@
 {
-  "FileVersion": 3,
-  "EngineAssociation": "5.8",
-  "Category": "",
-  "Description": "MariaGame",
-  "Modules": [
-    {
-      "Name": "MariaGame",
-      "Type": "Runtime",
-      "LoadingPhase": "Default"
-    }
-  ]
+	"FileVersion": 3,
+	"EngineAssociation": "5.8",
+	"Category": "",
+	"Description": "MariaGame",
+	"Modules": [
+		{
+			"Name": "MariaGame",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "AIAssistant",
+			"Enabled": true
+		},
+		{
+			"Name": "ModelContextProtocol",
+			"Enabled": true
+		},
+		{
+			"Name": "AllToolsets",
+			"Enabled": true
+		}
+	]
 }
