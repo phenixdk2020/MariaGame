@@ -1,12 +1,16 @@
 #include "MariaPrototypeCharacter.h"
-#include "Interaction/MariaInteractable.h"
+#include "Wardrobe/MariaWardrobeComponent.h"
+#include "Wardrobe/MariaHangerActor.h"
+#include "Save/MariaOutfitSaveGame.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
+#include "EngineUtils.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMariaPrototypeCharacter::AMariaPrototypeCharacter()
@@ -171,43 +175,133 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AMariaPrototypeCharacter::Turn);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AMariaPrototypeCharacter::LookUp);
     PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &AMariaPrototypeCharacter::Interact);
+    PlayerInputComponent->BindAction(TEXT("Preview"), IE_Pressed, this, &AMariaPrototypeCharacter::TogglePreviewMode);
+    PlayerInputComponent->BindAction(TEXT("SaveOutfit"), IE_Pressed, this, &AMariaPrototypeCharacter::SaveOutfit);
+    PlayerInputComponent->BindAction(TEXT("LoadOutfit"), IE_Pressed, this, &AMariaPrototypeCharacter::LoadOutfit);
 }
 
 void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-    UpdateInteractionFocus();
+    if (!bPreviewMode)
+    {
+        UpdateInteractionFocus();
+    }
 }
 
 void AMariaPrototypeCharacter::MoveForward(float Value)
 {
-    if (!Controller || FMath::IsNearlyZero(Value)) return;
+    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value)) return;
     const FRotator Rotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
     AddMovementInput(FRotationMatrix(Rotation).GetUnitAxis(EAxis::X), Value);
 }
 
 void AMariaPrototypeCharacter::MoveRight(float Value)
 {
-    if (!Controller || FMath::IsNearlyZero(Value)) return;
+    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value)) return;
     const FRotator Rotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
     AddMovementInput(FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y), Value);
 }
 
 void AMariaPrototypeCharacter::Turn(float Value)
 {
+    if (bPreviewMode)
+    {
+        AddActorLocalRotation(FRotator(0.0f, Value * 2.0f, 0.0f));
+        return;
+    }
+
     AddControllerYawInput(Value);
 }
 
 void AMariaPrototypeCharacter::LookUp(float Value)
 {
-    AddControllerPitchInput(Value);
+    if (!bPreviewMode)
+    {
+        AddControllerPitchInput(Value);
+    }
 }
 
 void AMariaPrototypeCharacter::Interact()
 {
-    if (FocusedInteractable.GetObject())
+    if (!bPreviewMode && FocusedInteractable.GetObject())
     {
         IMariaInteractable::Execute_Interact(FocusedInteractable.GetObject(), this);
+    }
+}
+
+void AMariaPrototypeCharacter::TogglePreviewMode()
+{
+    bPreviewMode = !bPreviewMode;
+    CameraBoom->TargetArmLength = bPreviewMode ? 450.0f : 320.0f;
+
+    if (bPreviewMode && FocusedInteractable.GetObject())
+    {
+        IMariaInteractable::Execute_SetFocused(FocusedInteractable.GetObject(), false);
+        FocusedInteractable.SetObject(nullptr);
+        FocusedInteractable.SetInterface(nullptr);
+    }
+}
+
+void AMariaPrototypeCharacter::SaveOutfit()
+{
+    if (!Wardrobe)
+    {
+        return;
+    }
+
+    UMariaOutfitSaveGame* SaveGame = Cast<UMariaOutfitSaveGame>(
+        UGameplayStatics::CreateSaveGameObject(UMariaOutfitSaveGame::StaticClass()));
+
+    if (!SaveGame)
+    {
+        return;
+    }
+
+    SaveGame->EquippedItems = Wardrobe->EquippedItems;
+    UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("MariaOutfit"), 0);
+}
+
+void AMariaPrototypeCharacter::LoadOutfit()
+{
+    if (!Wardrobe)
+    {
+        return;
+    }
+
+    UMariaOutfitSaveGame* SaveGame = Cast<UMariaOutfitSaveGame>(
+        UGameplayStatics::LoadGameFromSlot(TEXT("MariaOutfit"), 0));
+
+    if (!SaveGame)
+    {
+        return;
+    }
+
+    for (TActorIterator<AMariaHangerActor> It(GetWorld()); It; ++It)
+    {
+        It->SetOccupied(true);
+    }
+
+    RemoveItem(EMariaClothingSlot::UpperBody);
+    RemoveItem(EMariaClothingSlot::LowerBody);
+    RemoveItem(EMariaClothingSlot::Dress);
+    RemoveItem(EMariaClothingSlot::Jacket);
+    RemoveItem(EMariaClothingSlot::Shoes);
+
+    for (const TPair<EMariaClothingSlot, FName>& Pair : SaveGame->EquippedItems)
+    {
+        for (TActorIterator<AMariaHangerActor> It(GetWorld()); It; ++It)
+        {
+            AMariaHangerActor* Hanger = *It;
+            if (Hanger && Hanger->ClothingItem.ItemId == Pair.Value)
+            {
+                if (WearItem(Hanger->ClothingItem))
+                {
+                    Hanger->SetOccupied(false);
+                }
+                break;
+            }
+        }
     }
 }
 
