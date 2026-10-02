@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "GameFramework/PlayerController.h"
 #include "Engine/PointLight.h"
+#include "Components/LightComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Components/StaticMeshComponent.h"
 
@@ -28,15 +29,13 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
         return;
     }
 
-    // Guarantee a visible/possessed prototype character even when the
-    // engine Entry map does not contain a PlayerStart.
     APlayerController* PC = World->GetFirstPlayerController();
     if (PC && !PC->GetPawn())
     {
         AMariaPrototypeCharacter* Maria = World->SpawnActor<AMariaPrototypeCharacter>(
             AMariaPrototypeCharacter::StaticClass(),
             FVector(0.0f, 0.0f, 0.0f),
-            FRotator(0.0f, 0.0f, 0.0f));
+            FRotator::ZeroRotator);
 
         if (Maria)
         {
@@ -48,7 +47,6 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
 
     if (CubeMesh)
     {
-        // Floor
         AStaticMeshActor* Floor = World->SpawnActor<AStaticMeshActor>(
             AStaticMeshActor::StaticClass(),
             FVector(0.0f, 0.0f, -100.0f),
@@ -60,7 +58,6 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
             Floor->SetActorScale3D(FVector(20.0f, 20.0f, 1.0f));
         }
 
-        // Simple back wall so the scene is obviously visible.
         AStaticMeshActor* BackWall = World->SpawnActor<AStaticMeshActor>(
             AStaticMeshActor::StaticClass(),
             FVector(700.0f, 0.0f, 150.0f),
@@ -73,23 +70,23 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
         }
     }
 
-    // Wardrobe in front of the character.
     World->SpawnActor<AMariaWardrobeActor>(
         AMariaWardrobeActor::StaticClass(),
         FVector(500.0f, 0.0f, 0.0f),
         FRotator(0.0f, 180.0f, 0.0f));
 
-    // Strong temporary prototype lights. These will later be replaced by
-    // a proper room/lighting setup.
     APointLight* KeyLight = World->SpawnActor<APointLight>(
         APointLight::StaticClass(),
         FVector(150.0f, 0.0f, 350.0f),
         FRotator::ZeroRotator);
 
-    if (KeyLight && KeyLight->GetPointLightComponent())
+    if (KeyLight)
     {
-        KeyLight->GetPointLightComponent()->SetIntensity(18000.0f);
-        KeyLight->GetPointLightComponent()->SetAttenuationRadius(1800.0f);
+        if (UPointLightComponent* Light = Cast<UPointLightComponent>(KeyLight->GetLightComponent()))
+        {
+            Light->SetIntensity(18000.0f);
+            Light->SetAttenuationRadius(1800.0f);
+        }
     }
 
     APointLight* FillLight = World->SpawnActor<APointLight>(
@@ -97,9 +94,12 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
         FVector(500.0f, 300.0f, 250.0f),
         FRotator::ZeroRotator);
 
-    if (FillLight && FillLight->GetPointLightComponent())
+    if (FillLight)
     {
-        FillLight->GetPointLightComponent()->SetIntensity(9000.0f);
-        FillLight->GetPointLightComponent()->SetAttenuationRadius(1400.0f);
+        if (UPointLightComponent* Light = Cast<UPointLightComponent>(FillLight->GetLightComponent()))
+        {
+            Light->SetIntensity(9000.0f);
+            Light->SetAttenuationRadius(1400.0f);
+        }
     }
 }
