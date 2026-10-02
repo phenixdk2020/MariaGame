@@ -13,6 +13,7 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     SetRootComponent(Root);
 
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderMesh(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
 
     auto SetupBox = [&](UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale)
     {
@@ -64,6 +65,17 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     HangerRail = CreateDefaultSubobject<USceneComponent>(TEXT("HangerRail"));
     HangerRail->SetupAttachment(Root);
     HangerRail->SetRelativeLocation(FVector(-10.0f, 0.0f, 170.0f));
+
+    HangerRailMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HangerRailMesh"));
+    HangerRailMesh->SetupAttachment(Root);
+    HangerRailMesh->SetRelativeLocation(FVector(-10.0f, 0.0f, 184.0f));
+    HangerRailMesh->SetRelativeRotation(FRotator(90.0f, 0.0f, 0.0f));
+    HangerRailMesh->SetRelativeScale3D(FVector(0.035f, 0.035f, 2.55f));
+    HangerRailMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    if (CylinderMesh.Succeeded())
+    {
+        HangerRailMesh->SetStaticMesh(CylinderMesh.Object);
+    }
 
     HangerClass = AMariaHangerActor::StaticClass();
 }
