@@ -48,6 +48,47 @@ void AMariaPrototypeHUD::DrawHUD()
         FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 72.0f, Font, 0.95f, false);
     DrawText(TEXT("Preview: F1 front  F2 bag  F3 venstre  F4 højre  |  Musehjul: zoom"), 
         FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 92.0f, Font, 0.95f, false);
+    DrawText(TEXT("I: tøjimport-panel"), 
+        FLinearColor(0.75f, 0.78f, 0.82f, 1.0f), 28.0f, 112.0f, Font, 0.95f, false);
+
+
+    if (Maria->IsImportPanelVisible())
+    {
+        const float PanelX = 70.0f;
+        const float PanelY = 155.0f;
+        const float PanelW = FMath::Min(620.0f, Width - 140.0f);
+        const float PanelH = 360.0f;
+
+        DrawRect(FLinearColor(0.025f, 0.03f, 0.04f, 0.92f), PanelX, PanelY, PanelW, PanelH);
+        DrawText(TEXT("TØJIMPORT - KLAR TIL BILLEDER"), FLinearColor(0.92f, 0.82f, 0.58f, 1.0f),
+            PanelX + 24.0f, PanelY + 22.0f, Font, 1.25f, false);
+
+        DrawText(TEXT("Billedesæt"), FLinearColor(0.66f, 0.82f, 1.0f, 1.0f),
+            PanelX + 24.0f, PanelY + 62.0f, Font, 1.0f, false);
+
+        DrawText(TEXT("Front: krævet"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 88.0f, Font, 0.95f, false);
+        DrawText(TEXT("Bag: anbefalet"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 108.0f, Font, 0.95f, false);
+        DrawText(TEXT("Venstre/højre side: anbefalet"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 128.0f, Font, 0.95f, false);
+        DrawText(TEXT("Detaljer/stof/logo: valgfrit"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 148.0f, Font, 0.95f, false);
+
+        DrawText(TEXT("Planlagt pipeline"), FLinearColor(0.66f, 0.82f, 1.0f, 1.0f),
+            PanelX + 24.0f, PanelY + 188.0f, Font, 1.0f, false);
+        DrawText(TEXT("1. Filvalidering  ->  2. Tøjtype  ->  3. 3D-template"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 214.0f, Font, 0.92f, false);
+        DrawText(TEXT("4. Materiale/tekstur  ->  5. Kropstilpasning"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 236.0f, Font, 0.92f, false);
+        DrawText(TEXT("6. Preview  ->  7. Gem i fysisk garderobe"), FLinearColor::White,
+            PanelX + 42.0f, PanelY + 258.0f, Font, 0.92f, false);
+
+        DrawText(TEXT("Importmotoren accepterer JPG / JPEG / PNG / WEBP."), FLinearColor(0.72f, 0.76f, 0.80f, 1.0f),
+            PanelX + 24.0f, PanelY + 302.0f, Font, 0.88f, false);
+        DrawText(TEXT("Personlige kildebilleder er ekskluderet fra Git."), FLinearColor(0.72f, 0.76f, 0.80f, 1.0f),
+            PanelX + 24.0f, PanelY + 324.0f, Font, 0.88f, false);
+    }
 
     // Crosshair
     DrawRect(FLinearColor::White, Width * 0.5f - 8.0f, Height * 0.5f - 1.0f, 16.0f, 2.0f);
@@ -67,7 +108,7 @@ void AMariaPrototypeHUD::DrawHUD()
         DrawText(Prompt, FLinearColor(1.0f, 0.92f, 0.55f, 1.0f), Width * 0.5f - 125.0f, Height - 78.0f, Font, 1.15f, false);
     }
 
-    float DebugY = 132.0f;
+    float DebugY = 152.0f;
     const float DebugX = Width - 280.0f;
     DrawText(TEXT("DEBUG"), FLinearColor(0.65f, 0.85f, 1.0f, 1.0f), DebugX, DebugY, Font, 1.0f, false);
     DebugY += 20.0f;
