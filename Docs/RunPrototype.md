@@ -40,11 +40,18 @@ Direkte build:
 - **Mus** – kamera
 - **E** – åbn/luk garderobe eller tag fokuseret tøj på
 - **P** – 360° preview til/fra
+- **Musehjul** – zoom i preview
+- **F1** – front view i preview
+- **F2** – bag view i preview
+- **F3** – venstre side i preview
+- **F4** – højre side i preview
 - **1** – blond hårfarve
 - **2** – brun hårfarve
 - **3** – sort hårfarve
-- **F5** – gem aktuelt outfit
-- **F9** – indlæs gemt outfit
+- **F6/F7/F8** – vælg outfit-slot 1/2/3
+- **F5** – gem aktuelt outfit i valgt slot
+- **F9** – indlæs valgt outfit-slot
+- **I** – vis/skjul tøjimport-panelet
 
 ## Prototype 0.2 indeholder
 
@@ -91,3 +98,54 @@ Ved runtime oprettes nu:
 ## Kendt prototype-begrænsning
 
 Geometrien er stadig genereret af Unreal Engine-primitiver. Formålet med 0.2 er at få rum, interaktion, garderobe, HUD og slot-logik på plads. Næste større trin er humanoid/rigged avatar, rigtige garments, outfit-browser og foto-/tøjimport.
+
+## Nem update/build
+
+Efter denne version findes scripts i `Tools`:
+
+```powershell
+.\Tools\Update-MariaGame.ps1
+```
+
+opdaterer repoet sikkert og stopper, hvis du har lokale ændringer.
+
+```powershell
+.\Tools\Build-MariaGame.ps1
+```
+
+bygger MariaGameEditor og gemmer build-log under `Tools\BuildLogs`.
+
+Begge dele i én kommando:
+
+```powershell
+.\Tools\Sync-And-Build-MariaGame.ps1
+```
+
+## Importfundament
+
+Prototype 0.2 indeholder nu også kodefundament til:
+
+- clothing import jobs
+- front/bag/side/detail-billeder
+- JPG/JPEG/PNG/WEBP-validering
+- importstatus og progress
+- avatar reference photos
+- face front + 45° venstre/højre + profiler
+- body front/side/back
+- clothing DataAssets
+- hair-style DataAssets
+
+Selve billedanalyse/3D-generering kobles på senere, når de rigtige billeder er tilgængelige.
+
+## Private billeder
+
+Personlige avatar- og tøjbilleder skal ligge i mapper, der er ekskluderet fra Git, fx:
+
+```text
+Private/
+Imports/SourcePhotos/
+Content/Private/
+Content/GeneratedPrivate/
+```
+
+Disse paths er nu i `.gitignore`.
