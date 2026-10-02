@@ -163,3 +163,17 @@ Content/GeneratedPrivate/
 ```
 
 Disse paths er nu i `.gitignore`.
+
+
+## Anbefalet daglig kommando
+
+Brug nu den robuste version 2.0.0 til både Git-opdatering og build:
+
+```powershell
+Set-Location "R:\Onedrive\Unreal\MariaGame"
+.\Tools\Sync-And-Build-MariaGame.ps1 -LaunchOnSuccess
+```
+
+Den beskytter lokale ændringer, opdaterer fra GitHub med `--ff-only`, bygger projektet og laver en kompakt fejlrapport ved compile-fejl.
+
+Se `Docs/SyncBuild.md` for alle parametre og exit-koder.
