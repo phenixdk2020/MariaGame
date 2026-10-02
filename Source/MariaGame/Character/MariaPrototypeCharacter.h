@@ -8,6 +8,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class UStaticMeshComponent;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class MARIAGAME_API AMariaPrototypeCharacter : public AMariaCharacter
@@ -20,7 +21,13 @@ public:
     virtual bool WearItem(const FMariaClothingItem& Item) override;
     virtual void RemoveItem(EMariaClothingSlot Slot) override;
 
+    FString GetInteractionPrompt() const;
+    FString GetFocusedItemText() const;
+    FString GetHairPresetName() const { return HairPresetName; }
+    bool IsPreviewModeActive() const { return bPreviewMode; }
+
 protected:
+    virtual void BeginPlay() override;
     virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
     virtual void Tick(float DeltaSeconds) override;
 
@@ -52,6 +59,9 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeJacket;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeShoes;
 
+    UPROPERTY(Transient)
+    TObjectPtr<UMaterialInstanceDynamic> PrototypeHairMaterial;
+
     UPROPERTY(EditAnywhere, Category="Interaction")
     float InteractionDistance = 420.0f;
 
@@ -59,6 +69,7 @@ private:
     TScriptInterface<IMariaInteractable> FocusedInteractable;
 
     bool bPreviewMode = false;
+    FString HairPresetName = TEXT("Brun");
 
     void MoveForward(float Value);
     void MoveRight(float Value);
@@ -69,6 +80,13 @@ private:
     void TogglePreviewMode();
     void SaveOutfit();
     void LoadOutfit();
+
+    void HairBlonde();
+    void HairBrown();
+    void HairBlack();
+    void SetPrototypeHairColor(const FLinearColor& Color, const FString& PresetName);
+
+    FString ClothingSlotToString(EMariaClothingSlot Slot) const;
 
     UStaticMeshComponent* GetPrototypeClothingComponent(EMariaClothingSlot Slot) const;
     void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
