@@ -32,11 +32,14 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> CylinderMesh(TEXT("/Engine/BasicShapes/Cylinder.Cylinder"));
+    static ConstructorHelpers::FObjectFinder<UStaticMesh> ConeMesh(TEXT("/Engine/BasicShapes/Cone.Cone"));
     static ConstructorHelpers::FObjectFinder<UMaterialInterface> BasicMaterial(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
 
     DummyHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyHead"));
     DummyNeck = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyNeck"));
     DummyTorso = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyTorso"));
+    DummyPelvis = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyPelvis"));
     DummyLeftShoulder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftShoulder"));
     DummyRightShoulder = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightShoulder"));
     DummyLeftArm = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftArm"));
@@ -47,28 +50,37 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     DummyRightLeg = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightLeg"));
     DummyLeftFoot = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftFoot"));
     DummyRightFoot = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightFoot"));
+    DummyLeftEye = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyLeftEye"));
+    DummyRightEye = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyRightEye"));
+    DummyNose = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyNose"));
 
-    ConfigureBodyPart(DummyHead, SphereMesh.Object, FVector(0.0f, 0.0f, 83.0f), FVector(0.20f, 0.18f, 0.23f));
-    ConfigureBodyPart(DummyNeck, CubeMesh.Object, FVector(0.0f, 0.0f, 62.0f), FVector(0.09f, 0.09f, 0.12f));
-    ConfigureBodyPart(DummyTorso, CubeMesh.Object, FVector(0.0f, 0.0f, 29.0f), FVector(0.28f, 0.18f, 0.40f));
-    ConfigureBodyPart(DummyLeftShoulder, SphereMesh.Object, FVector(0.0f, -25.0f, 48.0f), FVector(0.11f));
-    ConfigureBodyPart(DummyRightShoulder, SphereMesh.Object, FVector(0.0f, 25.0f, 48.0f), FVector(0.11f));
-    ConfigureBodyPart(DummyLeftArm, CubeMesh.Object, FVector(0.0f, -28.0f, 17.0f), FVector(0.085f, 0.085f, 0.34f));
-    ConfigureBodyPart(DummyRightArm, CubeMesh.Object, FVector(0.0f, 28.0f, 17.0f), FVector(0.085f, 0.085f, 0.34f));
-    ConfigureBodyPart(DummyLeftHand, SphereMesh.Object, FVector(0.0f, -28.0f, -18.0f), FVector(0.08f, 0.065f, 0.11f));
-    ConfigureBodyPart(DummyRightHand, SphereMesh.Object, FVector(0.0f, 28.0f, -18.0f), FVector(0.08f, 0.065f, 0.11f));
-    ConfigureBodyPart(DummyLeftLeg, CubeMesh.Object, FVector(0.0f, -11.0f, -42.0f), FVector(0.105f, 0.11f, 0.48f));
-    ConfigureBodyPart(DummyRightLeg, CubeMesh.Object, FVector(0.0f, 11.0f, -42.0f), FVector(0.105f, 0.11f, 0.48f));
-    ConfigureBodyPart(DummyLeftFoot, CubeMesh.Object, FVector(9.0f, -11.0f, -91.0f), FVector(0.19f, 0.11f, 0.07f));
-    ConfigureBodyPart(DummyRightFoot, CubeMesh.Object, FVector(9.0f, 11.0f, -91.0f), FVector(0.19f, 0.11f, 0.07f));
+    ConfigureBodyPart(DummyHead, SphereMesh.Object, FVector(0.0f, 0.0f, 84.0f), FVector(0.19f, 0.17f, 0.22f));
+    ConfigureBodyPart(DummyNeck, CylinderMesh.Object, FVector(0.0f, 0.0f, 63.0f), FVector(0.075f, 0.075f, 0.13f));
+    ConfigureBodyPart(DummyTorso, SphereMesh.Object, FVector(0.0f, 0.0f, 31.0f), FVector(0.27f, 0.18f, 0.34f));
+    ConfigureBodyPart(DummyPelvis, SphereMesh.Object, FVector(0.0f, 0.0f, -2.0f), FVector(0.23f, 0.17f, 0.17f));
+    ConfigureBodyPart(DummyLeftShoulder, SphereMesh.Object, FVector(0.0f, -23.0f, 47.0f), FVector(0.10f));
+    ConfigureBodyPart(DummyRightShoulder, SphereMesh.Object, FVector(0.0f, 23.0f, 47.0f), FVector(0.10f));
+    ConfigureBodyPart(DummyLeftArm, CylinderMesh.Object, FVector(0.0f, -25.0f, 16.0f), FVector(0.07f, 0.07f, 0.34f));
+    ConfigureBodyPart(DummyRightArm, CylinderMesh.Object, FVector(0.0f, 25.0f, 16.0f), FVector(0.07f, 0.07f, 0.34f));
+    ConfigureBodyPart(DummyLeftHand, SphereMesh.Object, FVector(0.0f, -25.0f, -18.0f), FVector(0.07f, 0.06f, 0.10f));
+    ConfigureBodyPart(DummyRightHand, SphereMesh.Object, FVector(0.0f, 25.0f, -18.0f), FVector(0.07f, 0.06f, 0.10f));
+    ConfigureBodyPart(DummyLeftLeg, CylinderMesh.Object, FVector(0.0f, -10.0f, -46.0f), FVector(0.085f, 0.085f, 0.46f));
+    ConfigureBodyPart(DummyRightLeg, CylinderMesh.Object, FVector(0.0f, 10.0f, -46.0f), FVector(0.085f, 0.085f, 0.46f));
+    ConfigureBodyPart(DummyLeftFoot, CubeMesh.Object, FVector(10.0f, -10.0f, -91.0f), FVector(0.18f, 0.095f, 0.055f));
+    ConfigureBodyPart(DummyRightFoot, CubeMesh.Object, FVector(10.0f, 10.0f, -91.0f), FVector(0.18f, 0.095f, 0.055f));
+
+    ConfigureBodyPart(DummyLeftEye, SphereMesh.Object, FVector(17.0f, -6.5f, 88.0f), FVector(0.025f, 0.018f, 0.025f));
+    ConfigureBodyPart(DummyRightEye, SphereMesh.Object, FVector(17.0f, 6.5f, 88.0f), FVector(0.025f, 0.018f, 0.025f));
+    ConfigureBodyPart(DummyNose, ConeMesh.Object, FVector(18.0f, 0.0f, 82.0f), FVector(0.035f, 0.035f, 0.07f));
+    DummyNose->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
 
     BaseUnderwearTop = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseUnderwearTop"));
     BaseUnderwearBottom = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseUnderwearBottom"));
     PrototypeHair = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeHair"));
 
-    ConfigurePrototypeClothing(BaseUnderwearTop, FVector(-1.0f, 0.0f, 28.0f), FVector(0.295f, 0.195f, 0.18f));
+    ConfigurePrototypeClothing(BaseUnderwearTop, FVector(-1.0f, 0.0f, 27.0f), FVector(0.275f, 0.19f, 0.17f));
     ConfigurePrototypeClothing(BaseUnderwearBottom, FVector(-1.0f, 0.0f, -5.0f), FVector(0.24f, 0.18f, 0.12f));
-    ConfigurePrototypeClothing(PrototypeHair, FVector(-3.0f, 0.0f, 87.0f), FVector(0.22f, 0.20f, 0.20f));
+    ConfigurePrototypeClothing(PrototypeHair, FVector(-4.0f, 0.0f, 91.0f), FVector(0.21f, 0.19f, 0.16f));
 
     if (CubeMesh.Succeeded())
     {
@@ -96,20 +108,32 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
     PrototypeJacket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeJacket"));
     PrototypeShoes = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PrototypeShoes"));
 
+    if (SphereMesh.Succeeded())
+    {
+        PrototypeUpperBody->SetStaticMesh(SphereMesh.Object);
+        PrototypeJacket->SetStaticMesh(SphereMesh.Object);
+    }
+
     if (CubeMesh.Succeeded())
     {
-        PrototypeUpperBody->SetStaticMesh(CubeMesh.Object);
         PrototypeLowerBody->SetStaticMesh(CubeMesh.Object);
-        PrototypeDress->SetStaticMesh(CubeMesh.Object);
-        PrototypeJacket->SetStaticMesh(CubeMesh.Object);
         PrototypeShoes->SetStaticMesh(CubeMesh.Object);
     }
 
-    ConfigurePrototypeClothing(PrototypeUpperBody, FVector(-1.0f, 0.0f, 30.0f), FVector(0.31f, 0.205f, 0.31f));
-    ConfigurePrototypeClothing(PrototypeLowerBody, FVector(-1.0f, 0.0f, -38.0f), FVector(0.24f, 0.19f, 0.42f));
-    ConfigurePrototypeClothing(PrototypeDress, FVector(-2.0f, 0.0f, 2.0f), FVector(0.34f, 0.22f, 0.70f));
-    ConfigurePrototypeClothing(PrototypeJacket, FVector(-3.0f, 0.0f, 31.0f), FVector(0.35f, 0.24f, 0.38f));
-    ConfigurePrototypeClothing(PrototypeShoes, FVector(8.0f, 0.0f, -91.0f), FVector(0.23f, 0.24f, 0.09f));
+    if (ConeMesh.Succeeded())
+    {
+        PrototypeDress->SetStaticMesh(ConeMesh.Object);
+    }
+
+    ConfigurePrototypeClothing(PrototypeUpperBody, FVector(-1.0f, 0.0f, 31.0f), FVector(0.29f, 0.20f, 0.29f));
+    ConfigurePrototypeClothing(PrototypeLowerBody, FVector(-1.0f, 0.0f, -38.0f), FVector(0.22f, 0.18f, 0.43f));
+    ConfigurePrototypeClothing(PrototypeDress, FVector(-2.0f, 0.0f, 2.0f), FVector(0.34f, 0.26f, 0.62f));
+    ConfigurePrototypeClothing(PrototypeJacket, FVector(-3.0f, 0.0f, 31.0f), FVector(0.33f, 0.23f, 0.33f));
+    ConfigurePrototypeClothing(PrototypeShoes, FVector(10.0f, 0.0f, -91.0f), FVector(0.22f, 0.22f, 0.075f));
+
+    CameraBoom->bEnableCameraLag = true;
+    CameraBoom->CameraLagSpeed = 9.0f;
+    CameraBoom->CameraLagMaxDistance = 40.0f;
 
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -118,6 +142,26 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 void AMariaPrototypeCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    const FLinearColor Skin(0.78f, 0.48f, 0.34f, 1.0f);
+    const FLinearColor EyeColor(0.035f, 0.025f, 0.018f, 1.0f);
+    const FLinearColor Underwear(0.16f, 0.12f, 0.14f, 1.0f);
+
+    for (UStaticMeshComponent* Part : {
+        DummyHead.Get(), DummyNeck.Get(), DummyTorso.Get(), DummyPelvis.Get(),
+        DummyLeftShoulder.Get(), DummyRightShoulder.Get(),
+        DummyLeftArm.Get(), DummyRightArm.Get(),
+        DummyLeftHand.Get(), DummyRightHand.Get(),
+        DummyLeftLeg.Get(), DummyRightLeg.Get(),
+        DummyLeftFoot.Get(), DummyRightFoot.Get(), DummyNose.Get() })
+    {
+        ApplyPrototypeColor(Part, Skin, 0.68f, 0.0f);
+    }
+
+    ApplyPrototypeColor(DummyLeftEye, EyeColor, 0.22f, 0.0f);
+    ApplyPrototypeColor(DummyRightEye, EyeColor, 0.22f, 0.0f);
+    ApplyPrototypeColor(BaseUnderwearTop, Underwear, 0.78f, 0.0f);
+    ApplyPrototypeColor(BaseUnderwearBottom, Underwear, 0.78f, 0.0f);
 
     if (PrototypeHair && PrototypeHair->GetNumMaterials() > 0)
     {
@@ -134,6 +178,22 @@ void AMariaPrototypeCharacter::ConfigureBodyPart(UStaticMeshComponent* Component
     Component->SetRelativeLocation(Location);
     Component->SetRelativeScale3D(Scale);
     Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AMariaPrototypeCharacter::ApplyPrototypeColor(UStaticMeshComponent* Component, const FLinearColor& Color, float Roughness, float Metallic)
+{
+    if (!Component || Component->GetNumMaterials() <= 0)
+    {
+        return;
+    }
+
+    if (UMaterialInstanceDynamic* Material = Component->CreateDynamicMaterialInstance(0))
+    {
+        Material->SetVectorParameterValue(TEXT("Color"), Color);
+        Material->SetVectorParameterValue(TEXT("BaseColor"), Color);
+        Material->SetScalarParameterValue(TEXT("Roughness"), Roughness);
+        Material->SetScalarParameterValue(TEXT("Metallic"), Metallic);
+    }
 }
 
 void AMariaPrototypeCharacter::ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale)
@@ -180,6 +240,7 @@ bool AMariaPrototypeCharacter::WearItem(const FMariaClothingItem& Item)
     if (UStaticMeshComponent* Component = GetPrototypeClothingComponent(Item.Slot))
     {
         Component->SetRelativeScale3D(Item.PreviewScale);
+        ApplyPrototypeColor(Component, Item.PreviewColor, 0.62f, 0.0f);
         Component->SetVisibility(true, true);
     }
 
