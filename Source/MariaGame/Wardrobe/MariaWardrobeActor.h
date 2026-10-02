@@ -7,6 +7,7 @@
 
 class USceneComponent;
 class UStaticMeshComponent;
+class UPointLightComponent;
 class AMariaHangerActor;
 
 UCLASS()
@@ -25,6 +26,13 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> BottomPanel;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> UpperShelf;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> ShoeShelf;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> CenterDivider;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> LeftDoorHandle;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> RightDoorHandle;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> FoldedStackA;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> FoldedStackB;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> ShelfShoeLeft;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> ShelfShoeRight;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<USceneComponent> LeftDoorHinge;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<USceneComponent> RightDoorHinge;
@@ -33,6 +41,7 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<USceneComponent> HangerRail;
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UStaticMeshComponent> HangerRailMesh;
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly) TObjectPtr<UPointLightComponent> InteriorLight;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Wardrobe")
     TSubclassOf<AMariaHangerActor> HangerClass;
