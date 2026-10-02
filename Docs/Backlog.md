@@ -12,16 +12,16 @@
 - [x] Physical wardrobe actor with hanger rail
 - [x] Modular Maria character slots
 - [x] Runtime hair-color hook
-- [ ] Add placeholder body/character mesh
-- [ ] Add placeholder wardrobe mesh
-- [ ] Add hanger mesh
+- [x] Add placeholder body/character mesh
+- [x] Add placeholder wardrobe mesh
+- [x] Add placeholder hanger mesh
 - [ ] Add 3 placeholder clothing meshes
-- [ ] Player interaction trace
-- [ ] Highlight selected hanger/clothing
-- [ ] Pick clothing from hanger
-- [ ] Equip selected clothing on Maria
+- [x] Player interaction trace
+- [x] Highlight selected hanger/clothing
+- [x] Pick clothing from hanger
+- [x] Equip selected clothing on Maria
 - [ ] Return clothing to hanger
-- [ ] Open/close wardrobe doors
+- [x] Open/close wardrobe doors
 - [ ] Dressing-room camera
 - [ ] Mirror/360-degree preview
 - [ ] Save/load outfit
