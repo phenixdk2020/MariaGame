@@ -42,10 +42,10 @@ public:
     TObjectPtr<UMariaWardrobeComponent> Wardrobe;
 
     UFUNCTION(BlueprintCallable, Category="Appearance")
-    bool WearItem(const FMariaClothingItem& Item);
+    virtual bool WearItem(const FMariaClothingItem& Item);
 
     UFUNCTION(BlueprintCallable, Category="Appearance")
-    void RemoveItem(EMariaClothingSlot Slot);
+    virtual void RemoveItem(EMariaClothingSlot Slot);
 
     UFUNCTION(BlueprintCallable, Category="Appearance|Hair")
     void SetHairColor(FLinearColor NewColor);
