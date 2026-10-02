@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Character/MariaCharacter.h"
+#include "Interaction/MariaInteractable.h"
 #include "MariaPrototypeCharacter.generated.h"
 
 class USpringArmComponent;
@@ -67,7 +68,9 @@ private:
     float InteractionDistance = 350.0f;
 
     UPROPERTY(Transient)
-    TScriptInterface<class IMariaInteractable> FocusedInteractable;
+    TScriptInterface<IMariaInteractable> FocusedInteractable;
+
+    bool bPreviewMode = false;
 
     void MoveForward(float Value);
     void MoveRight(float Value);
@@ -75,6 +78,9 @@ private:
     void LookUp(float Value);
     void Interact();
     void UpdateInteractionFocus();
+    void TogglePreviewMode();
+    void SaveOutfit();
+    void LoadOutfit();
 
     UStaticMeshComponent* GetPrototypeClothingComponent(EMariaClothingSlot Slot) const;
     void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
