@@ -59,6 +59,7 @@ public:
     virtual void SetFocused_Implementation(bool bFocused) override;
 
 protected:
+    virtual void BeginPlay() override;
     virtual void OnConstruction(const FTransform& Transform) override;
     virtual void Tick(float DeltaSeconds) override;
 
