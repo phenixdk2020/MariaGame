@@ -1,6 +1,7 @@
 #include "MariaPrototypeCharacter.h"
 #include "Wardrobe/MariaWardrobeComponent.h"
 #include "Wardrobe/MariaHangerActor.h"
+#include "Wardrobe/MariaWardrobeActor.h"
 #include "Save/MariaOutfitSaveGame.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -11,6 +12,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "Materials/MaterialInterface.h"
+#include "Materials/MaterialInstanceDynamic.h"
 #include "UObject/ConstructorHelpers.h"
 
 AMariaPrototypeCharacter::AMariaPrototypeCharacter()
@@ -29,6 +32,7 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 
     static ConstructorHelpers::FObjectFinder<UStaticMesh> CubeMesh(TEXT("/Engine/BasicShapes/Cube.Cube"));
     static ConstructorHelpers::FObjectFinder<UStaticMesh> SphereMesh(TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+    static ConstructorHelpers::FObjectFinder<UMaterialInterface> BasicMaterial(TEXT("/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial"));
 
     DummyHead = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyHead"));
     DummyNeck = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DummyNeck"));
@@ -71,9 +75,15 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
         BaseUnderwearTop->SetStaticMesh(CubeMesh.Object);
         BaseUnderwearBottom->SetStaticMesh(CubeMesh.Object);
     }
+
     if (SphereMesh.Succeeded())
     {
         PrototypeHair->SetStaticMesh(SphereMesh.Object);
+    }
+
+    if (BasicMaterial.Succeeded())
+    {
+        PrototypeHair->SetMaterial(0, BasicMaterial.Object);
     }
 
     BaseUnderwearTop->SetVisibility(true, true);
@@ -103,6 +113,18 @@ AMariaPrototypeCharacter::AMariaPrototypeCharacter()
 
     bUseControllerRotationYaw = false;
     GetCharacterMovement()->bOrientRotationToMovement = true;
+}
+
+void AMariaPrototypeCharacter::BeginPlay()
+{
+    Super::BeginPlay();
+
+    if (PrototypeHair && PrototypeHair->GetNumMaterials() > 0)
+    {
+        PrototypeHairMaterial = PrototypeHair->CreateDynamicMaterialInstance(0);
+    }
+
+    HairBrown();
 }
 
 void AMariaPrototypeCharacter::ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* Mesh, const FVector& Location, const FVector& Scale)
@@ -181,9 +203,14 @@ void AMariaPrototypeCharacter::RemoveItem(EMariaClothingSlot Slot)
     if (Slot == EMariaClothingSlot::Dress)
     {
         if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::UpperBody))
+        {
             PrototypeUpperBody->SetVisibility(true, true);
+        }
+
         if (Wardrobe && Wardrobe->EquippedItems.Contains(EMariaClothingSlot::LowerBody))
+        {
             PrototypeLowerBody->SetVisibility(true, true);
+        }
     }
 }
 
@@ -195,15 +222,20 @@ void AMariaPrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Player
     PlayerInputComponent->BindAxis(TEXT("MoveRight"), this, &AMariaPrototypeCharacter::MoveRight);
     PlayerInputComponent->BindAxis(TEXT("Turn"), this, &AMariaPrototypeCharacter::Turn);
     PlayerInputComponent->BindAxis(TEXT("LookUp"), this, &AMariaPrototypeCharacter::LookUp);
+
     PlayerInputComponent->BindAction(TEXT("Interact"), IE_Pressed, this, &AMariaPrototypeCharacter::Interact);
     PlayerInputComponent->BindAction(TEXT("Preview"), IE_Pressed, this, &AMariaPrototypeCharacter::TogglePreviewMode);
     PlayerInputComponent->BindAction(TEXT("SaveOutfit"), IE_Pressed, this, &AMariaPrototypeCharacter::SaveOutfit);
     PlayerInputComponent->BindAction(TEXT("LoadOutfit"), IE_Pressed, this, &AMariaPrototypeCharacter::LoadOutfit);
+    PlayerInputComponent->BindAction(TEXT("HairBlonde"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBlonde);
+    PlayerInputComponent->BindAction(TEXT("HairBrown"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBrown);
+    PlayerInputComponent->BindAction(TEXT("HairBlack"), IE_Pressed, this, &AMariaPrototypeCharacter::HairBlack);
 }
 
 void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
+
     if (!bPreviewMode)
     {
         UpdateInteractionFocus();
@@ -212,14 +244,22 @@ void AMariaPrototypeCharacter::Tick(float DeltaSeconds)
 
 void AMariaPrototypeCharacter::MoveForward(float Value)
 {
-    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value)) return;
+    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value))
+    {
+        return;
+    }
+
     const FRotator Rotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
     AddMovementInput(FRotationMatrix(Rotation).GetUnitAxis(EAxis::X), Value);
 }
 
 void AMariaPrototypeCharacter::MoveRight(float Value)
 {
-    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value)) return;
+    if (bPreviewMode || !Controller || FMath::IsNearlyZero(Value))
+    {
+        return;
+    }
+
     const FRotator Rotation(0.0f, Controller->GetControlRotation().Yaw, 0.0f);
     AddMovementInput(FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y), Value);
 }
@@ -231,6 +271,7 @@ void AMariaPrototypeCharacter::Turn(float Value)
         AddActorLocalRotation(FRotator(0.0f, Value * 2.0f, 0.0f));
         return;
     }
+
     AddControllerYawInput(Value);
 }
 
@@ -265,11 +306,18 @@ void AMariaPrototypeCharacter::TogglePreviewMode()
 
 void AMariaPrototypeCharacter::SaveOutfit()
 {
-    if (!Wardrobe) return;
+    if (!Wardrobe)
+    {
+        return;
+    }
 
     UMariaOutfitSaveGame* SaveGame = Cast<UMariaOutfitSaveGame>(
         UGameplayStatics::CreateSaveGameObject(UMariaOutfitSaveGame::StaticClass()));
-    if (!SaveGame) return;
+
+    if (!SaveGame)
+    {
+        return;
+    }
 
     SaveGame->EquippedItems = Wardrobe->EquippedItems;
     UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("MariaOutfit"), 0);
@@ -277,14 +325,23 @@ void AMariaPrototypeCharacter::SaveOutfit()
 
 void AMariaPrototypeCharacter::LoadOutfit()
 {
-    if (!Wardrobe) return;
+    if (!Wardrobe)
+    {
+        return;
+    }
 
     UMariaOutfitSaveGame* SaveGame = Cast<UMariaOutfitSaveGame>(
         UGameplayStatics::LoadGameFromSlot(TEXT("MariaOutfit"), 0));
-    if (!SaveGame) return;
+
+    if (!SaveGame)
+    {
+        return;
+    }
 
     for (TActorIterator<AMariaHangerActor> It(GetWorld()); It; ++It)
+    {
         It->SetOccupied(true);
+    }
 
     RemoveItem(EMariaClothingSlot::UpperBody);
     RemoveItem(EMariaClothingSlot::LowerBody);
@@ -297,19 +354,138 @@ void AMariaPrototypeCharacter::LoadOutfit()
         for (TActorIterator<AMariaHangerActor> It(GetWorld()); It; ++It)
         {
             AMariaHangerActor* Hanger = *It;
+
             if (Hanger && Hanger->ClothingItem.ItemId == Pair.Value)
             {
                 if (WearItem(Hanger->ClothingItem))
+                {
                     Hanger->SetOccupied(false);
+                }
+
                 break;
             }
         }
     }
 }
 
+void AMariaPrototypeCharacter::HairBlonde()
+{
+    SetPrototypeHairColor(FLinearColor(0.72f, 0.52f, 0.24f, 1.0f), TEXT("Blond"));
+}
+
+void AMariaPrototypeCharacter::HairBrown()
+{
+    SetPrototypeHairColor(FLinearColor(0.16f, 0.055f, 0.02f, 1.0f), TEXT("Brun"));
+}
+
+void AMariaPrototypeCharacter::HairBlack()
+{
+    SetPrototypeHairColor(FLinearColor(0.012f, 0.008f, 0.006f, 1.0f), TEXT("Sort"));
+}
+
+void AMariaPrototypeCharacter::SetPrototypeHairColor(const FLinearColor& Color, const FString& PresetName)
+{
+    HairPresetName = PresetName;
+
+    if (!PrototypeHairMaterial && PrototypeHair && PrototypeHair->GetNumMaterials() > 0)
+    {
+        PrototypeHairMaterial = PrototypeHair->CreateDynamicMaterialInstance(0);
+    }
+
+    if (PrototypeHairMaterial)
+    {
+        PrototypeHairMaterial->SetVectorParameterValue(TEXT("Color"), Color);
+        PrototypeHairMaterial->SetVectorParameterValue(TEXT("BaseColor"), Color);
+    }
+}
+
+FString AMariaPrototypeCharacter::ClothingSlotToString(EMariaClothingSlot Slot) const
+{
+    switch (Slot)
+    {
+        case EMariaClothingSlot::Hair: return TEXT("Hår");
+        case EMariaClothingSlot::Headwear: return TEXT("Hovedbeklædning");
+        case EMariaClothingSlot::UpperBody: return TEXT("Overdel");
+        case EMariaClothingSlot::LowerBody: return TEXT("Underdel");
+        case EMariaClothingSlot::Dress: return TEXT("Kjole");
+        case EMariaClothingSlot::Jacket: return TEXT("Jakke");
+        case EMariaClothingSlot::Shoes: return TEXT("Sko");
+        case EMariaClothingSlot::Accessory: return TEXT("Tilbehør");
+        default: return TEXT("Ukendt");
+    }
+}
+
+FString AMariaPrototypeCharacter::GetInteractionPrompt() const
+{
+    UObject* Focused = FocusedInteractable.GetObject();
+
+    if (!Focused)
+    {
+        return bPreviewMode ? TEXT("P - Forlad preview") : FString();
+    }
+
+    if (const AMariaWardrobeActor* WardrobeActor = Cast<AMariaWardrobeActor>(Focused))
+    {
+        return WardrobeActor->bDoorsOpen ? TEXT("E - Luk garderobe") : TEXT("E - Åbn garderobe");
+    }
+
+    if (const AMariaHangerActor* Hanger = Cast<AMariaHangerActor>(Focused))
+    {
+        if (const AMariaWardrobeActor* WardrobeActor = Cast<AMariaWardrobeActor>(Hanger->GetOwner()))
+        {
+            if (!WardrobeActor->bDoorsOpen)
+            {
+                return TEXT("Åbn garderoben først");
+            }
+        }
+
+        if (!Hanger->bOccupied)
+        {
+            return TEXT("Tom bøjle");
+        }
+
+        return FString::Printf(TEXT("E - Tag %s på"), *Hanger->ClothingItem.DisplayName.ToString());
+    }
+
+    return TEXT("E - Interager");
+}
+
+FString AMariaPrototypeCharacter::GetFocusedItemText() const
+{
+    UObject* Focused = FocusedInteractable.GetObject();
+
+    if (!Focused)
+    {
+        return FString();
+    }
+
+    if (Cast<AMariaWardrobeActor>(Focused))
+    {
+        return TEXT("Garderobe");
+    }
+
+    if (const AMariaHangerActor* Hanger = Cast<AMariaHangerActor>(Focused))
+    {
+        if (!Hanger->bOccupied)
+        {
+            return TEXT("Tom bøjle");
+        }
+
+        return FString::Printf(
+            TEXT("%s  |  %s"),
+            *Hanger->ClothingItem.DisplayName.ToString(),
+            *ClothingSlotToString(Hanger->ClothingItem.Slot));
+    }
+
+    return Focused->GetName();
+}
+
 void AMariaPrototypeCharacter::UpdateInteractionFocus()
 {
-    if (!FollowCamera || !GetWorld()) return;
+    if (!FollowCamera || !GetWorld())
+    {
+        return;
+    }
 
     const FVector Start = FollowCamera->GetComponentLocation();
     const FVector End = Start + FollowCamera->GetForwardVector() * InteractionDistance;
@@ -319,18 +495,27 @@ void AMariaPrototypeCharacter::UpdateInteractionFocus()
     GetWorld()->LineTraceSingleByChannel(Hit, Start, End, ECC_Visibility, Params);
 
     UObject* NewObject = Hit.GetActor();
+
     if (!NewObject || !NewObject->GetClass()->ImplementsInterface(UMariaInteractable::StaticClass()))
+    {
         NewObject = nullptr;
+    }
 
     if (FocusedInteractable.GetObject() == NewObject)
+    {
         return;
+    }
 
     if (FocusedInteractable.GetObject())
+    {
         IMariaInteractable::Execute_SetFocused(FocusedInteractable.GetObject(), false);
+    }
 
     FocusedInteractable.SetObject(NewObject);
     FocusedInteractable.SetInterface(NewObject ? Cast<IMariaInteractable>(NewObject) : nullptr);
 
     if (NewObject)
+    {
         IMariaInteractable::Execute_SetFocused(NewObject, true);
+    }
 }
