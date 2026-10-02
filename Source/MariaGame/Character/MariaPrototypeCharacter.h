@@ -58,10 +58,18 @@ private:
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeHair;
 
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeUpperBody;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeUpperSleeveLeft;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeUpperSleeveRight;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeLowerBody;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeLowerLegLeft;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeLowerLegRight;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeDress;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeJacket;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeJacketSleeveLeft;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeJacketSleeveRight;
     UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeShoes;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeShoeLeft;
+    UPROPERTY(VisibleAnywhere) TObjectPtr<UStaticMeshComponent> PrototypeShoeRight;
 
     UPROPERTY(Transient)
     TObjectPtr<UMaterialInstanceDynamic> PrototypeHairMaterial;
@@ -96,4 +104,5 @@ private:
     void ConfigurePrototypeClothing(UStaticMeshComponent* Component, const FVector& Location, const FVector& Scale);
     void ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* StaticMesh, const FVector& Location, const FVector& Scale);
     void ApplyPrototypeColor(UStaticMeshComponent* Component, const FLinearColor& Color, float Roughness = 0.55f, float Metallic = 0.0f);
+    void SetPrototypeSlotExtrasVisible(EMariaClothingSlot Slot, bool bVisible, const FLinearColor& Color);
 };
