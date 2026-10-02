@@ -3,6 +3,9 @@
 #include "CoreMinimal.h"
 #include "MariaClothingTypes.generated.h"
 
+class USkeletalMesh;
+class UTexture2D;
+
 UENUM(BlueprintType)
 enum class EMariaClothingSlot : uint8
 {
