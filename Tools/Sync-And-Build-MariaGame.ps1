@@ -4,7 +4,7 @@
     errors, and optionally starts Unreal Editor.
 
 .VERSION
-    2.1.0
+    2.1.1
 
 .DESCRIPTION
     Safe daily workflow for MariaGame.
@@ -19,6 +19,9 @@
       - No reset --hard, force checkout, force pull or destructive cleanup.
 
 .CHANGELOG
+    2.1.1
+      - Git is executed through System.Diagnostics.Process
+      - Normal Git stderr progress no longer becomes PowerShell NativeCommandError
     2.1.0
       - Fixed v2.0 bug where Tools\BuildLogs was stashed while in use
       - Logs moved to Saved\BuildLogs
@@ -46,7 +49,7 @@ param(
 Set-StrictMode -Version 2.0
 $ErrorActionPreference = 'Stop'
 
-$ScriptVersion = '2.1.0'
+$ScriptVersion = '2.1.1'
 $RepoRoot = Split-Path -Parent $PSScriptRoot
 $Project = Join-Path $RepoRoot 'MariaGame.uproject'
 $BuildBat = Join-Path $EngineRoot 'Engine\Build\BatchFiles\Build.bat'
@@ -113,25 +116,58 @@ function Invoke-GitCmd {
         [switch]$Quiet
     )
 
-    $Command = 'git -C "{0}" {1}' -f $RepoRoot, $Arguments
-
     if (-not $Quiet) {
         Write-Log -Level INFO -Message ('GIT> ' + $Arguments)
     }
 
-    $Output = & cmd.exe /d /s /c $Command 2>&1
-    $Code = $LASTEXITCODE
+    $GitPath = (Get-Command git -ErrorAction Stop).Source
 
-    if (-not $Quiet -and $Output) {
-        foreach ($Line in $Output) {
+    $StartInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $StartInfo.FileName = $GitPath
+    $StartInfo.Arguments = '-C "' + $RepoRoot + '" ' + $Arguments
+    $StartInfo.UseShellExecute = $false
+    $StartInfo.RedirectStandardOutput = $true
+    $StartInfo.RedirectStandardError = $true
+    $StartInfo.CreateNoWindow = $true
+
+    $Process = New-Object System.Diagnostics.Process
+    $Process.StartInfo = $StartInfo
+
+    [void]$Process.Start()
+
+    $StdOut = $Process.StandardOutput.ReadToEnd()
+    $StdErr = $Process.StandardError.ReadToEnd()
+    $Process.WaitForExit()
+
+    $Code = $Process.ExitCode
+    $Lines = New-Object System.Collections.Generic.List[string]
+
+    if (-not [string]::IsNullOrWhiteSpace($StdOut)) {
+        foreach ($Line in ($StdOut -split "\r?\n")) {
+            if (-not [string]::IsNullOrWhiteSpace($Line)) {
+                $Lines.Add($Line)
+            }
+        }
+    }
+
+    if (-not [string]::IsNullOrWhiteSpace($StdErr)) {
+        foreach ($Line in ($StdErr -split "\r?\n")) {
+            if (-not [string]::IsNullOrWhiteSpace($Line)) {
+                $Lines.Add($Line)
+            }
+        }
+    }
+
+    if (-not $Quiet) {
+        foreach ($Line in $Lines) {
             Write-Host $Line
-            Add-SessionText ([string]$Line)
+            Add-SessionText $Line
         }
     }
 
     [PSCustomObject]@{
         ExitCode = $Code
-        Output   = @($Output)
+        Output   = @($Lines)
     }
 }
 
