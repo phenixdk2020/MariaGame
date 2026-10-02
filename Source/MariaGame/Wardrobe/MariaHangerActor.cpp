@@ -1,6 +1,7 @@
 #include "MariaHangerActor.h"
 #include "Character/MariaCharacter.h"
 #include "Wardrobe/MariaWardrobeComponent.h"
+#include "Wardrobe/MariaWardrobeActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
@@ -17,7 +18,7 @@ AMariaHangerActor::AMariaHangerActor()
     if (CubeMesh.Succeeded())
     {
         HangerMesh->SetStaticMesh(CubeMesh.Object);
-        HangerMesh->SetRelativeScale3D(FVector(0.04f, 0.45f, 0.04f));
+        HangerMesh->SetRelativeScale3D(FVector(0.035f, 0.48f, 0.035f));
     }
 
     ClothingPreviewMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ClothingPreview"));
@@ -60,6 +61,14 @@ void AMariaHangerActor::Interact_Implementation(AActor* Interactor)
     if (!bOccupied)
     {
         return;
+    }
+
+    if (const AMariaWardrobeActor* WardrobeActor = Cast<AMariaWardrobeActor>(GetOwner()))
+    {
+        if (!WardrobeActor->bDoorsOpen)
+        {
+            return;
+        }
     }
 
     AMariaCharacter* Maria = Cast<AMariaCharacter>(Interactor);
