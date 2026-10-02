@@ -6,6 +6,7 @@
 #include "MariaClothingTypes.h"
 #include "MariaHangerActor.generated.h"
 
+class USceneComponent;
 class UStaticMeshComponent;
 class USkeletalMeshComponent;
 
@@ -18,7 +19,25 @@ public:
     AMariaHangerActor();
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<USceneComponent> Root;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TObjectPtr<UStaticMeshComponent> HangerMesh;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> LeftShoulder;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> RightShoulder;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> BottomBar;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> HookStem;
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    TObjectPtr<UStaticMeshComponent> HookTop;
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
     TObjectPtr<UStaticMeshComponent> ClothingPreviewMesh;
