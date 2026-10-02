@@ -7,6 +7,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Engine/StaticMesh.h"
 
 AMariaHangerActor::AMariaHangerActor()
 {
@@ -82,7 +84,70 @@ AMariaHangerActor::AMariaHangerActor()
 void AMariaHangerActor::ApplyClothingItem()
 {
     ClothingMesh->SetSkeletalMesh(ClothingItem.SkeletalMesh);
+
+    UStaticMesh* PreviewShape = nullptr;
+    FVector PreviewLocation(0.0f, 0.0f, -58.0f);
+
+    switch (ClothingItem.Slot)
+    {
+        case EMariaClothingSlot::Dress:
+            PreviewShape = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cone.Cone"));
+            PreviewLocation.Z = -64.0f;
+            break;
+
+        case EMariaClothingSlot::UpperBody:
+        case EMariaClothingSlot::Jacket:
+            PreviewShape = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Sphere.Sphere"));
+            PreviewLocation.Z = -52.0f;
+            break;
+
+        default:
+            PreviewShape = LoadObject<UStaticMesh>(nullptr, TEXT("/Engine/BasicShapes/Cube.Cube"));
+            break;
+    }
+
+    if (PreviewShape)
+    {
+        ClothingPreviewMesh->SetStaticMesh(PreviewShape);
+    }
+
+    ClothingPreviewMesh->SetRelativeLocation(PreviewLocation);
     ClothingPreviewMesh->SetRelativeScale3D(ClothingItem.PreviewScale);
+
+    if (ClothingPreviewMesh->GetNumMaterials() > 0)
+    {
+        if (UMaterialInstanceDynamic* Material = ClothingPreviewMesh->CreateDynamicMaterialInstance(0))
+        {
+            Material->SetVectorParameterValue(TEXT("Color"), ClothingItem.PreviewColor);
+            Material->SetVectorParameterValue(TEXT("BaseColor"), ClothingItem.PreviewColor);
+            Material->SetScalarParameterValue(TEXT("Roughness"), 0.64f);
+        }
+    }
+
+    auto TintHangerPart = [](UStaticMeshComponent* Component)
+    {
+        if (!Component || Component->GetNumMaterials() <= 0)
+        {
+            return;
+        }
+
+        if (UMaterialInstanceDynamic* Material = Component->CreateDynamicMaterialInstance(0))
+        {
+            const FLinearColor HangerColor(0.06f, 0.055f, 0.05f, 1.0f);
+            Material->SetVectorParameterValue(TEXT("Color"), HangerColor);
+            Material->SetVectorParameterValue(TEXT("BaseColor"), HangerColor);
+            Material->SetScalarParameterValue(TEXT("Roughness"), 0.30f);
+            Material->SetScalarParameterValue(TEXT("Metallic"), 0.35f);
+        }
+    };
+
+    TintHangerPart(HangerMesh);
+    TintHangerPart(LeftShoulder);
+    TintHangerPart(RightShoulder);
+    TintHangerPart(BottomBar);
+    TintHangerPart(HookStem);
+    TintHangerPart(HookTop);
+
     SetOccupied(bOccupied);
 }
 
