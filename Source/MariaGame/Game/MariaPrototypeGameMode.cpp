@@ -1,6 +1,7 @@
 #include "MariaPrototypeGameMode.h"
 #include "Character/MariaPrototypeCharacter.h"
 #include "Wardrobe/MariaWardrobeActor.h"
+#include "UI/MariaPrototypeHUD.h"
 #include "Engine/StaticMeshActor.h"
 #include "Engine/StaticMesh.h"
 #include "Engine/World.h"
@@ -12,6 +13,7 @@
 AMariaPrototypeGameMode::AMariaPrototypeGameMode()
 {
     DefaultPawnClass = AMariaPrototypeCharacter::StaticClass();
+    HUDClass = AMariaPrototypeHUD::StaticClass();
 }
 
 void AMariaPrototypeGameMode::BeginPlay()
@@ -75,8 +77,9 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
     SpawnStatic(CubeMesh, FVector(0.0f, -750.0f, 180.0f), FVector(12.0f, 0.10f, 3.0f));
     SpawnStatic(CubeMesh, FVector(0.0f, 0.0f, 455.0f), FVector(12.0f, 12.0f, 0.10f));
 
-    // Avatar preview podium
-    SpawnStatic(CylinderMesh, FVector(0.0f, 0.0f, -92.0f), FVector(1.35f, 1.35f, 0.12f));
+    // Dressing-room zone + avatar preview podium
+    SpawnStatic(CubeMesh, FVector(0.0f, 0.0f, -94.0f), FVector(3.6f, 3.6f, 0.04f));
+    SpawnStatic(CylinderMesh, FVector(0.0f, 0.0f, -88.0f), FVector(1.35f, 1.35f, 0.12f));
 
     // Mirror frame and mirror panel
     SpawnStatic(CubeMesh, FVector(650.0f, -360.0f, 150.0f), FVector(0.08f, 2.0f, 2.4f));
@@ -111,7 +114,18 @@ void AMariaPrototypeGameMode::BuildPrototypeWorld()
         }
     };
 
-    // Three-point prototype lighting
+    // Ceiling fixtures
+    SpawnStatic(CylinderMesh, FVector(-260.0f, -260.0f, 435.0f), FVector(0.28f, 0.28f, 0.05f));
+    SpawnStatic(CylinderMesh, FVector(260.0f, -260.0f, 435.0f), FVector(0.28f, 0.28f, 0.05f));
+    SpawnStatic(CylinderMesh, FVector(-260.0f, 260.0f, 435.0f), FVector(0.28f, 0.28f, 0.05f));
+    SpawnStatic(CylinderMesh, FVector(260.0f, 260.0f, 435.0f), FVector(0.28f, 0.28f, 0.05f));
+
+    SpawnLight(FVector(-260.0f, -260.0f, 405.0f), 3500.0f, 850.0f);
+    SpawnLight(FVector(260.0f, -260.0f, 405.0f), 3500.0f, 850.0f);
+    SpawnLight(FVector(-260.0f, 260.0f, 405.0f), 3500.0f, 850.0f);
+    SpawnLight(FVector(260.0f, 260.0f, 405.0f), 3500.0f, 850.0f);
+
+    // Three-point avatar/room lighting
     SpawnLight(FVector(120.0f, -120.0f, 320.0f), 12000.0f, 1500.0f);
     SpawnLight(FVector(420.0f, 360.0f, 260.0f), 7000.0f, 1200.0f);
     SpawnLight(FVector(-250.0f, 200.0f, 280.0f), 5000.0f, 1200.0f);
