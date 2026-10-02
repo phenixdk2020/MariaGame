@@ -24,3 +24,9 @@ Content/Private/
 Content/GeneratedPrivate/
 Saved/ImportedPhotos/
 Saved/AvatarSourcePhotos/
+
+# Legacy local build logs from sync script v2.0
+Tools/BuildLogs/
+
+# Local Unreal collections
+Content/Collections/
