@@ -127,10 +127,10 @@ void AMariaPrototypeCharacter::BeginPlay()
     HairBrown();
 }
 
-void AMariaPrototypeCharacter::ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* Mesh, const FVector& Location, const FVector& Scale)
+void AMariaPrototypeCharacter::ConfigureBodyPart(UStaticMeshComponent* Component, UStaticMesh* StaticMesh, const FVector& Location, const FVector& Scale)
 {
     Component->SetupAttachment(RootComponent);
-    Component->SetStaticMesh(Mesh);
+    Component->SetStaticMesh(StaticMesh);
     Component->SetRelativeLocation(Location);
     Component->SetRelativeScale3D(Scale);
     Component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
