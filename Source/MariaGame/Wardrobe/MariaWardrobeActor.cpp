@@ -4,6 +4,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "Engine/World.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 AMariaWardrobeActor::AMariaWardrobeActor()
 {
@@ -78,6 +79,42 @@ AMariaWardrobeActor::AMariaWardrobeActor()
     }
 
     HangerClass = AMariaHangerActor::StaticClass();
+}
+
+void AMariaWardrobeActor::BeginPlay()
+{
+    Super::BeginPlay();
+
+    auto Tint = [](UStaticMeshComponent* Component, const FLinearColor& Color, float Roughness, float Metallic)
+    {
+        if (!Component || Component->GetNumMaterials() <= 0)
+        {
+            return;
+        }
+
+        if (UMaterialInstanceDynamic* Material = Component->CreateDynamicMaterialInstance(0))
+        {
+            Material->SetVectorParameterValue(TEXT("Color"), Color);
+            Material->SetVectorParameterValue(TEXT("BaseColor"), Color);
+            Material->SetScalarParameterValue(TEXT("Roughness"), Roughness);
+            Material->SetScalarParameterValue(TEXT("Metallic"), Metallic);
+        }
+    };
+
+    const FLinearColor Wood(0.19f, 0.075f, 0.025f, 1.0f);
+    const FLinearColor WoodEdge(0.11f, 0.035f, 0.012f, 1.0f);
+    const FLinearColor Metal(0.22f, 0.24f, 0.27f, 1.0f);
+
+    for (UStaticMeshComponent* Part : {
+        CabinetBack.Get(), LeftSide.Get(), RightSide.Get(), TopPanel.Get(),
+        BottomPanel.Get(), UpperShelf.Get(), ShoeShelf.Get() })
+    {
+        Tint(Part, Wood, 0.42f, 0.0f);
+    }
+
+    Tint(LeftDoor, WoodEdge, 0.38f, 0.0f);
+    Tint(RightDoor, WoodEdge, 0.38f, 0.0f);
+    Tint(HangerRailMesh, Metal, 0.23f, 0.72f);
 }
 
 void AMariaWardrobeActor::OnConstruction(const FTransform& Transform)
@@ -156,42 +193,49 @@ void AMariaWardrobeActor::BuildHangers()
                 DemoItem.DisplayName = FText::FromString(TEXT("T-Shirt"));
                 DemoItem.Slot = EMariaClothingSlot::UpperBody;
                 DemoItem.PreviewScale = FVector(0.28f, 0.24f, 0.34f);
+                DemoItem.PreviewColor = FLinearColor(0.14f, 0.30f, 0.62f, 1.0f);
                 break;
             case 1:
                 DemoItem.ItemId = TEXT("Prototype_Blouse");
                 DemoItem.DisplayName = FText::FromString(TEXT("Bluse"));
                 DemoItem.Slot = EMariaClothingSlot::UpperBody;
                 DemoItem.PreviewScale = FVector(0.31f, 0.25f, 0.38f);
+                DemoItem.PreviewColor = FLinearColor(0.72f, 0.54f, 0.66f, 1.0f);
                 break;
             case 2:
                 DemoItem.ItemId = TEXT("Prototype_Sweater");
                 DemoItem.DisplayName = FText::FromString(TEXT("Sweater"));
                 DemoItem.Slot = EMariaClothingSlot::UpperBody;
                 DemoItem.PreviewScale = FVector(0.35f, 0.28f, 0.42f);
+                DemoItem.PreviewColor = FLinearColor(0.18f, 0.44f, 0.29f, 1.0f);
                 break;
             case 3:
                 DemoItem.ItemId = TEXT("Prototype_Trousers");
                 DemoItem.DisplayName = FText::FromString(TEXT("Bukser"));
                 DemoItem.Slot = EMariaClothingSlot::LowerBody;
                 DemoItem.PreviewScale = FVector(0.24f, 0.20f, 0.55f);
+                DemoItem.PreviewColor = FLinearColor(0.05f, 0.08f, 0.14f, 1.0f);
                 break;
             case 4:
                 DemoItem.ItemId = TEXT("Prototype_Dress");
                 DemoItem.DisplayName = FText::FromString(TEXT("Kjole"));
                 DemoItem.Slot = EMariaClothingSlot::Dress;
                 DemoItem.PreviewScale = FVector(0.34f, 0.27f, 0.72f);
+                DemoItem.PreviewColor = FLinearColor(0.62f, 0.08f, 0.12f, 1.0f);
                 break;
             case 5:
                 DemoItem.ItemId = TEXT("Prototype_Jacket");
                 DemoItem.DisplayName = FText::FromString(TEXT("Jakke"));
                 DemoItem.Slot = EMariaClothingSlot::Jacket;
                 DemoItem.PreviewScale = FVector(0.39f, 0.30f, 0.48f);
+                DemoItem.PreviewColor = FLinearColor(0.24f, 0.12f, 0.05f, 1.0f);
                 break;
             default:
                 DemoItem.ItemId = TEXT("Prototype_Shoes");
                 DemoItem.DisplayName = FText::FromString(TEXT("Sko"));
                 DemoItem.Slot = EMariaClothingSlot::Shoes;
                 DemoItem.PreviewScale = FVector(0.26f, 0.24f, 0.12f);
+                DemoItem.PreviewColor = FLinearColor(0.035f, 0.035f, 0.04f, 1.0f);
                 break;
         }
 
