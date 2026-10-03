@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Safely updates MariaGame from GitHub, builds Unreal, extracts compile
     errors, and optionally starts Unreal Editor.
@@ -264,8 +264,8 @@ function Show-ExistingAutoStashes {
 }
 
 function Protect-TrackedChanges {
-    $Tracked = Get-TrackedChanges
-    $Untracked = Get-UntrackedFiles
+    $Tracked = @(Get-TrackedChanges)
+    $Untracked = @(Get-UntrackedFiles)
 
     if ($Tracked.Count -eq 0) {
         Write-Log -Level OK -Message 'No tracked local changes.'
@@ -352,7 +352,7 @@ function Restore-TrackedChanges {
 }
 
 function Test-UntrackedIncomingCollision {
-    $Untracked = Get-UntrackedFiles
+    $Untracked = @(Get-UntrackedFiles)
     if ($Untracked.Count -eq 0) {
         return $true
     }
@@ -659,3 +659,6 @@ catch {
     Write-Log -Level INFO -Message ('Session log: ' + $SessionLog)
     exit 99
 }
+
+
+
